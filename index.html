@@ -9,7 +9,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
   <style>
-    /* Estilos básicos para la página */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -43,25 +42,39 @@
       margin-top: 20px;
       text-align: center;
     }
+    .formulario-pedido {
+      margin-bottom: 20px;
+    }
+    .formulario-pedido label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .formulario-pedido input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+    }
   </style>
 </head>
 <body>
+
   <h1>Panel de Administración de Pedidos</h1>
 
   <!-- Formulario de ingreso de pedido -->
-  <div>
+  <div class="formulario-pedido">
     <h2>Agregar Pedido</h2>
-    <label for="nombre">Nombre:</label><br>
-    <input type="text" id="nombre" required><br><br>
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre" required><br>
 
-    <label for="producto">Producto:</label><br>
-    <input type="text" id="producto" required><br><br>
+    <label for="producto">Producto:</label>
+    <input type="text" id="producto" required><br>
 
-    <label for="cantidad">Cantidad:</label><br>
-    <input type="number" id="cantidad" required><br><br>
+    <label for="cantidad">Cantidad:</label>
+    <input type="number" id="cantidad" required><br>
 
-    <label for="observacion">Observaciones:</label><br>
-    <input type="text" id="observacion"><br><br>
+    <label for="observacion">Observaciones:</label>
+    <input type="text" id="observacion"><br>
 
     <button class="btn" onclick="enviarPedido()">Enviar Pedido</button>
   </div>
@@ -248,5 +261,6 @@
     // Cargar los pedidos cuando se abra la página
     mostrarPedidos();
   </script>
+
 </body>
 </html>
