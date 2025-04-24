@@ -63,6 +63,9 @@
   </style>
 </head>
 <body>
+<!-- Estado de impresión -->
+<div id="estadoImpresion" style="width: 16px; height: 16px; border-radius: 50%; background-color: blue; margin-bottom: 10px;"></div>
+
   <h2>Formulario de Pedido</h2>
   <form id="pedidoForm">
    <label>Código Cliente: <input type="text" id="codigoCliente" oninput="cargarNombreCliente()" autocomplete="off"></label><br><br>
@@ -77,6 +80,10 @@
 
   <div id="adminPanel" class="admin-panel">
     <h2>Lista de Pedidos</h2>
+  <div style="display: flex; align-items: center; margin-bottom: 10px;">
+  <div id="estadoImpresion" style="width: 20px; height: 20px; border-radius: 50%; background-color: blue; margin-right: 10px;"></div>
+  <div id="nuevoPedido" style="display: none; background-color: yellow; padding: 5px 10px; border-radius: 5px; font-weight: bold;">Nuevo Pedido</div>
+</div>
     <table id="tablaPedidos">
       <thead>
         <tr>
@@ -97,6 +104,7 @@
     <button onclick="generarPDFCompleto()">Generar PDF Completo</button>
   </div>
   <button onclick="accederAdmin()">🔑 Acceder como Administrador</button>
+  <button type="button" onclick="solicitarClaveParaImpresion()">🖨 Imprimir PDF</button> <!-- Nuevo botón -->
 
   <script>
     let clientes = { "46291": "Generación", "34689": "Bitfarms", "23576": "Ingesa", "23205": "IPM", "32476": "TALDE" };
@@ -106,7 +114,6 @@
                                  "Tarta Pollo", "Tarta JyQ", "Tarta Atún", "Omelette", "Pure", "Papa Frita", "Arroz", "Verdura al Horno", "Pure Mixto", "Refrigerio", "Soda",
                                  "Gaseosa", "Mini Facturas"];
 
-   
     function cargarNombreCliente() {
       let codigo = document.getElementById("codigoCliente").value;
       document.getElementById("nombre").value = clientes[codigo] || "";
@@ -176,7 +183,7 @@
     let observaciones = document.querySelectorAll(".observacion");
 
     let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-    let fecha = new Date().toLocaleDateString();
+    let fecha = new Date().toLocaleString();
 
     productos.forEach((producto, index) => {
         pedidos.push({
@@ -194,7 +201,8 @@
 
     document.getElementById("pedidoForm").reset();
     document.getElementById("productosContainer").innerHTML = "";
-    cerrarModal();
+      actualizarEstado(); // ✅ ESTO ESTÁ BIEN
+      cerrarModal(); // ✅ ACOMODADO CORRECTAMENTE
 }
 
     function cerrarModal() {
@@ -206,11 +214,23 @@
       if (clave === "admin123") {
         document.getElementById("adminPanel").style.display = "block";
         mostrarPedidos();
+        actualizarEstado();  // Muestra el estado de los pedidos
       } else {
         alert("Clave incorrecta.");
       }
     }
   
+    function solicitarClaveParaImpresion() {
+        const claveCorrecta = "admin123"; // Clave establecida
+        const claveIngresada = prompt("Ingrese la clave para imprimir:");
+
+        if (claveIngresada === claveCorrecta) {
+            generarPDF(); // Llamamos a la función de impresión
+        } else {
+            alert("Clave incorrecta. No se puede imprimir.");
+        }
+    }
+
     function eliminarTodosLosPedidos() {
     if (confirm("¿Estás seguro de que quieres eliminar todos los pedidos? Esta acción no se puede deshacer.")) {
         localStorage.removeItem("pedidos"); // Elimina todos los pedidos guardados
@@ -243,6 +263,10 @@
     localStorage.setItem("pedidos", JSON.stringify(pedidos));
     mostrarPedidos(); // Actualiza la tabla
 }
+
+window.onload = function() {
+    actualizarEstado(); // Llamar a la función para actualizar el estado al cargar la página
+};
 
     function generarPDF() {
     const { jsPDF } = window.jspdf;
@@ -312,9 +336,27 @@
 
     localStorage.setItem("pedidos", JSON.stringify(pedidos));
 
+    actualizarEstado();
+
     doc.save(`Pedidos_${fechaActual}.pdf`);
 }
-    
+
+// Función para actualizar el estado visual del círculo de impresión
+function actualizarEstado() {
+  const pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+  const hayPendientes = pedidos.some(p => p.impreso === "No");
+
+  const estado = document.getElementById("estadoImpresion");
+  const cartel = document.getElementById("nuevoPedido");
+
+  if (hayPendientes) {
+    estado.style.backgroundColor = "green";
+    cartel.style.display = "block";
+  } else {
+    estado.style.backgroundColor = "blue";
+    cartel.style.display = "none";
+  }
+}    
     function generarPDFCompleto() {
     const { jsPDF } = window.jspdf;
     let doc = new jsPDF({ orientation: "landscape" });
@@ -382,6 +424,7 @@
       XLSX.utils.book_append_sheet(wb, ws, "Pedidos");
       XLSX.writeFile(wb, "Pedidos.xlsx");
     }
+
   </script>
 <div id="modalConfirmacion" class="modal">
     <div class="modal-content">
