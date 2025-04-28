@@ -206,6 +206,29 @@
     document.getElementById("modalConfirmacion").style.display = "none";
 }
 
+      function enviarPedidoAGoogleSheets(cliente, producto, cantidad) {
+  const pedido = {
+    cliente: cliente,
+    producto: producto,
+    cantidad: cantidad
+  };
+
+  fetch(https://script.google.com/macros/s/AKfycbwyNK323wRz8v5uWY1ueeu8scEsBV0XJNgB5cZczg8TE3oE2giyVm3HPcmCmlRYm1N6/exec, {
+    method: 'POST',
+    body: JSON.stringify(pedido),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.text())
+  .then(data => {
+    console.log('Pedido guardado en Google Sheets:', data);
+  })
+  .catch(error => {
+    console.error('Error al guardar pedido:', error);
+  });
+}
+
     function accederAdmin() {
       let clave = prompt("Ingrese la clave de administrador:");
       if (clave === "admin123") {
