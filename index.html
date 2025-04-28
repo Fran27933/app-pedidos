@@ -173,7 +173,7 @@
     document.getElementById("modalConfirmacion").style.display = "flex";
 }
 
-    function enviarPedido() {
+   function enviarPedido() {
     let nombre = document.getElementById("nombre").value;
     let productos = document.querySelectorAll(".producto");
     let cantidades = document.querySelectorAll(".cantidad");
@@ -191,6 +191,15 @@
             observacion: observaciones[index].value,
             impreso: "No"
         });
+
+        enviarPedidoAGoogleSheets(
+            fecha,
+            nombre,
+            producto.value,
+            cantidades[index].value,
+            observaciones[index].value,
+            "No"
+        );
     });
 
     localStorage.setItem("pedidos", JSON.stringify(pedidos));
@@ -198,22 +207,25 @@
 
     document.getElementById("pedidoForm").reset();
     document.getElementById("productosContainer").innerHTML = "";
-      actualizarEstado(); // ✅ ESTO ESTÁ BIEN
-      cerrarModal(); // ✅ ACOMODADO CORRECTAMENTE
+    actualizarEstado();
+    cerrarModal();
 }
 
     function cerrarModal() {
     document.getElementById("modalConfirmacion").style.display = "none";
 }
 
-      function enviarPedidoAGoogleSheets(cliente, producto, cantidad) {
-  const pedido = {
+     function enviarPedidoAGoogleSheets(fecha, cliente, producto, cantidad, observacion, impreso) {
+  var pedido = {
+    fecha: fecha,
     cliente: cliente,
     producto: producto,
-    cantidad: cantidad
+    cantidad: cantidad,
+    observacion: observacion,
+    impreso: impreso
   };
 
-  fetch(https://script.google.com/macros/s/AKfycbwyNK323wRz8v5uWY1ueeu8scEsBV0XJNgB5cZczg8TE3oE2giyVm3HPcmCmlRYm1N6/exec, {
+  fetch("https://script.google.com/macros/s/AKfycbwyNK323wRz8v5uWY1ueeu8scEsBV0XJNgB5cZczg8TE3oE2giyVm3HPcmCmlRYm1N6/exec", {
     method: 'POST',
     body: JSON.stringify(pedido),
     headers: {
