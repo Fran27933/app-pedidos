@@ -264,14 +264,12 @@
 
     function eliminarTodosLosPedidos() {
     if (confirm("¿Estás seguro de que quieres eliminar todos los pedidos? Esta acción no se puede deshacer.")) {
-        localStorage.removeItem("pedidos"); // Elimina todos los pedidos guardados
         mostrarPedidos(); // Actualiza la tabla para reflejar el cambio
         alert("Todos los pedidos han sido eliminados.");
     }
 }
 
     function mostrarPedidos() {
-      let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
       let tbody = document.querySelector("#tablaPedidos tbody");
       tbody.innerHTML = "";
       pedidos.forEach((p, index) => {
@@ -289,9 +287,7 @@
     }
     
     function eliminarPedido(index) {
-    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
     pedidos.splice(index, 1); // Elimina el pedido de la lista
-    localStorage.setItem("pedidos", JSON.stringify(pedidos));
     mostrarPedidos(); // Actualiza la tabla
 }
 
@@ -302,7 +298,6 @@ window.onload = function() {
     function generarPDF() {
     const { jsPDF } = window.jspdf;
     let doc = new jsPDF({ orientation: "landscape" });
-    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
     
     let pedidosNoImpresos = pedidos.filter(p => p.impreso === "No");
 
@@ -365,8 +360,6 @@ window.onload = function() {
         }
     });
 
-    localStorage.setItem("pedidos", JSON.stringify(pedidos));
-
     actualizarEstado();
 
     doc.save(`Pedidos_${fechaActual}.pdf`);
@@ -374,7 +367,6 @@ window.onload = function() {
 
 // Función para actualizar el estado visual del círculo de impresión
 function actualizarEstado() {
-  const pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
   const hayPendientes = pedidos.some(p => p.impreso === "No");
 
   const estado = document.getElementById("estadoImpresion");
@@ -391,8 +383,7 @@ function actualizarEstado() {
     function generarPDFCompleto() {
     const { jsPDF } = window.jspdf;
     let doc = new jsPDF({ orientation: "landscape" });
-    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-
+  
     if (pedidos.length === 0) {
         alert("No hay pedidos para imprimir.");
         return;
@@ -449,7 +440,6 @@ function actualizarEstado() {
 }
 
     function descargarExcel() {
-      let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
       let ws = XLSX.utils.json_to_sheet(pedidos);
       let wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Pedidos");
