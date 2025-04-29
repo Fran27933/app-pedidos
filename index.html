@@ -179,7 +179,6 @@
     let cantidades = document.querySelectorAll(".cantidad");
     let observaciones = document.querySelectorAll(".observacion");
 
-    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
     let fecha = new Date().toLocaleString();
 
     productos.forEach((producto, index) => {
@@ -202,7 +201,6 @@
         );
     });
 
-    localStorage.setItem("pedidos", JSON.stringify(pedidos));
     alert("Pedido enviado correctamente");
 
     document.getElementById("pedidoForm").reset();
