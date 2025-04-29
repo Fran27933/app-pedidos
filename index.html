@@ -299,7 +299,18 @@
         tbody.innerHTML += fila;
       });
     }
-    
+
+    function eliminarPedidosSiSonTres() {
+  const tabla = document.getElementById('tablaPedidos');
+  const filas = tabla.querySelectorAll('tbody tr');
+  
+  if (filas.length >= 3) {
+    for (let i = 0; i < 3; i++) {
+      tabla.deleteRow(1); // Elimina las filas, comenzando desde el índice 1 (el 0 corresponde al encabezado).
+    }
+    alert("Se han eliminado automáticamente los primeros 3 pedidos acumulados.");
+  }
+}
     function eliminarPedido(index) {
     let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
     pedidos.splice(index, 1); // Elimina el pedido de la lista
