@@ -282,23 +282,30 @@
     }
 }
 
-    function mostrarPedidos() {
-      let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-      let tbody = document.querySelector("#tablaPedidos tbody");
-      tbody.innerHTML = "";
-      pedidos.forEach((p, index) => {
-        let fila = `<tr>
-          <td>${p.fecha}</td>
-          <td>${p.nombre}</td>
-          <td>${p.producto}</td>
-          <td>${p.cantidad}</td>
-          <td>${p.observacion}</td>
-          <td>${p.impreso}</td>
-          <td><button onclick="eliminarPedido(${index})">❌</button></td>
-        </tr>`;
-        tbody.innerHTML += fila;
-      });
-    }
+  function mostrarPedidos() {
+  let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+
+  // ✅ Quedarse solo con los últimos 3 pedidos
+  if (pedidos.length > 3) {
+    pedidos = pedidos.slice(-3); // conservar solo los últimos 3
+    localStorage.setItem("pedidos", JSON.stringify(pedidos)); // actualizar localStorage
+  }
+
+  let tbody = document.querySelector("#tablaPedidos tbody");
+  tbody.innerHTML = "";
+  pedidos.forEach((p, index) => {
+    let fila = `<tr>
+      <td>${p.fecha}</td>
+      <td>${p.nombre}</td>
+      <td>${p.producto}</td>
+      <td>${p.cantidad}</td>
+      <td>${p.observacion}</td>
+      <td>${p.impreso}</td>
+      <td><button onclick="eliminarPedido(${index})">❌</button></td>
+    </tr>`;
+    tbody.innerHTML += fila;
+  });
+}
     
     function eliminarPedido(index) {
     let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
