@@ -272,23 +272,34 @@
     }
 }
 
-    function mostrarPedidos() {
-      let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-      let tbody = document.querySelector("#tablaPedidos tbody");
-      tbody.innerHTML = "";
-      pedidos.forEach((p, index) => {
-        let fila = `<tr>
-          <td>${p.fecha}</td>
-          <td>${p.nombre}</td>
-          <td>${p.producto}</td>
-          <td>${p.cantidad}</td>
-          <td>${p.observacion}</td>
-          <td>${p.impreso}</td>
-          <td><button onclick="eliminarPedido(${index})">❌</button></td>
-        </tr>`;
-        tbody.innerHTML += fila;
-      });
-    }
+ function mostrarPedidos() {
+  let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+  let tbody = document.querySelector("#tablaPedidos tbody");
+  tbody.innerHTML = "";
+  pedidos.forEach((p, index) => {
+    // Convertir la fecha al formato deseado DD/MM/YYYY HH:mm:ss
+    let fecha = new Date(p.fecha);
+    let fechaFormateada = fecha.toLocaleString("es-ES", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+
+    let fila = `<tr>
+      <td>${fechaFormateada}</td>
+      <td>${p.nombre}</td>
+      <td>${p.producto}</td>
+      <td>${p.cantidad}</td>
+      <td>${p.observacion}</td>
+      <td>${p.impreso}</td>
+      <td><button onclick="eliminarPedido(${index})">❌</button></td>
+    </tr>`;
+    tbody.innerHTML += fila;
+  });
+}
     
     function eliminarPedido(index) {
     let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
