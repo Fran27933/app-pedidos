@@ -172,24 +172,29 @@
     document.getElementById("resumenPedido").innerHTML = resumen;
     document.getElementById("modalConfirmacion").style.display = "flex";
 }
-
-   function enviarPedido() {
+function enviarPedido() {
     let nombre = document.getElementById("nombre").value;
     let productos = document.querySelectorAll(".producto");
     let cantidades = document.querySelectorAll(".cantidad");
     let observaciones = document.querySelectorAll(".observacion");
 
     let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-    let fecha = new Date().toLocaleString();
+    let fecha = new Date().toISOString(); // Fecha en formato ISO 8601
 
     productos.forEach((producto, index) => {
         pedidos.push({
-            fecha,
+            fecha, // Guardar fecha en ISO 8601
             nombre,
             producto: producto.value,
             cantidad: parseInt(cantidades[index].value),
             observacion: observaciones[index].value,
             impreso: "No"
+        });
+    });
+
+    localStorage.setItem("pedidos", JSON.stringify(pedidos)); // Guardar pedidos en localStorage
+}
+
         });
 
         enviarPedidoAGoogleSheets(
