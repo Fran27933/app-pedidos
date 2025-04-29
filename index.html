@@ -183,7 +183,7 @@
     return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
 }
 
- function enviarPedido() {
+   function enviarPedido() {
     let nombre = document.getElementById("nombre").value;
     let productos = document.querySelectorAll(".producto");
     let cantidades = document.querySelectorAll(".cantidad");
@@ -201,28 +201,6 @@
             observacion: observaciones[index].value,
             impreso: "No"
         });
-    });
-
-    localStorage.setItem("pedidos", JSON.stringify(pedidos));
-    alert("Pedido enviado correctamente");
-
-    document.getElementById("pedidoForm").reset();
-    document.getElementById("productosContainer").innerHTML = "";
-
-    eliminarPedidosSiSonTres(); // Llama a la función para manejar los pedidos en localStorage
-    actualizarEstado();
-    cerrarModal();
-}
-
-function eliminarPedidosSiSonTres() {
-    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-    
-    if (pedidos.length >= 3) {
-        pedidos.splice(0, 3); // Elimina los primeros 3 pedidos del arreglo
-        localStorage.setItem("pedidos", JSON.stringify(pedidos)); // Actualiza el localStorage
-        alert("Se han eliminado automáticamente los primeros 3 pedidos acumulados.");
-    }
-}
 
         enviarPedidoAGoogleSheets(
             fecha,
@@ -243,18 +221,6 @@ function eliminarPedidosSiSonTres() {
     cerrarModal();
 }
 
-    function eliminarPedidosSiSonTres() {
-  const tabla = document.getElementById('tablaPedidos');
-  const filas = tabla.querySelectorAll('tbody tr');
-  
-  if (filas.length >= 3) {
-    for (let i = 0; i < 3; i++) {
-      tabla.deleteRow(1); // Elimina las primeras filas, omitiendo el encabezado.
-    }
-    alert("Se han eliminado automáticamente los primeros 3 pedidos después de enviarlos.");
-  }
-}
-    
     function cerrarModal() {
     document.getElementById("modalConfirmacion").style.display = "none";
 }
@@ -333,7 +299,7 @@ function eliminarPedidosSiSonTres() {
         tbody.innerHTML += fila;
       });
     }
-
+    
     function eliminarPedido(index) {
     let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
     pedidos.splice(index, 1); // Elimina el pedido de la lista
