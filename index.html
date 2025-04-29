@@ -180,7 +180,8 @@
     let observaciones = document.querySelectorAll(".observacion");
 
     let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-    let fecha = new Date().toLocaleString();
+    let ahora = new Date();
+    let fecha = `${String(ahora.getDate()).padStart(2, '0')}/${String(ahora.getMonth() + 1).padStart(2, '0')}/${ahora.getFullYear()} ${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}`;
 
     productos.forEach((producto, index) => {
         pedidos.push({
