@@ -180,7 +180,14 @@ function enviarPedido() {
 
     let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
     let fecha = new Date().toISOString(); // Fecha en formato ISO 8601
-
+    let fechaFormateada = fecha.toLocaleString("es-ES", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+}); 
     productos.forEach((producto, index) => {
         pedidos.push({
             fecha, // Guardar fecha en ISO 8601
