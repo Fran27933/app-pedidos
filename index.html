@@ -67,21 +67,24 @@
 <div id="estadoImpresion" style="width: 16px; height: 16px; border-radius: 50%; background-color: blue; margin-bottom: 10px;"></div>
 
 <h2>Formulario de Pedido</h2>
-<form id="pedidoForm">
-  <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
-    <div>
-      <label for="codigoCliente">Código Cliente:</label><br>
-      <input type="text" id="codigoCliente" maxlength="5" minlength="5"
-             oninput="cargarNombreCliente()" autocomplete="off" required pattern=".{5}">
+<div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+  <form id="pedidoForm" style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+      <div>
+        <label for="codigoCliente">Código Cliente:</label><br>
+        <input type="text" id="codigoCliente" maxlength="5" minlength="5"
+               oninput="cargarNombreCliente()" autocomplete="off" required pattern=".{5}">
+      </div>
+
+      <div>
+        <label for="nombre">Nombre:</label><br>
+        <input type="text" id="nombre" required readonly>
+      </div>
     </div>
 
-    <div>
-      <label for="nombre">Nombre:</label><br>
-      <input type="text" id="nombre" required readonly>
-    </div>
-  </div>
-
-  <br>
+    <br>
+  </form>
+</div>
   <h3>Productos</h3>
   <div id="productosContainer"></div>
   <button type="button" onclick="agregarProducto()">➕ Agregar Producto</button><br><br>
