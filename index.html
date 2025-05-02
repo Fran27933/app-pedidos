@@ -215,9 +215,8 @@ function enviarPedido() {
     let cantidades = document.querySelectorAll(".cantidad");
     let observaciones = document.querySelectorAll(".observacion");
 
-    // Obtener los datos de localStorage y la fecha
     let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-    let fecha = obtenerFechaFormateada();
+    let fecha = obtenerFechaFormateada(); // Fecha con formato fijo
 
     productos.forEach((producto, index) => {
         pedidos.push({
@@ -229,7 +228,6 @@ function enviarPedido() {
             impreso: "No"
         });
 
-        // Enviar el pedido a Google Sheets
         enviarPedidoAGoogleSheets(
             fecha,
             nombre,
@@ -261,16 +259,17 @@ function enviarPedido() {
 }
 
 function cerrarModal() {
+    // Cerrar el modal de confirmación
     document.getElementById("modalConfirmacion").style.display = "none";
 }
 
-// Función para mostrar el botón de "Descargar PDF"
+// Función para mostrar el botón de "Descargar PDF" después de enviar el pedido
 function mostrarBotonDescargarPDF() {
-    // Asegurarse de que el modal esté visible
+    // Obtener el modal y asegurarse de que esté visible
     const modal = document.getElementById("modalConfirmacion");
-    modal.style.display = "flex";
+    modal.style.display = "flex";  // Mostrar modal si no está visible
 
-    // Obtener la referencia a la parte del contenido del modal
+    // Obtener la referencia al contenido del modal
     const modalContent = document.querySelector(".modal-content");
 
     // Crear el botón de descarga PDF
@@ -278,7 +277,7 @@ function mostrarBotonDescargarPDF() {
     btnDescargar.textContent = "Descargar PDF";
     btnDescargar.onclick = descargarPedidoPDF;
 
-    // Asegurarse de que el botón solo se agregue una vez
+    // Verificar si el botón ya existe para evitar duplicados
     if (!document.querySelector(".modal-content button")) {
         modalContent.appendChild(btnDescargar);
     }
