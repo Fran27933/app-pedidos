@@ -266,6 +266,11 @@ function cerrarModal() {
 
 // Función para mostrar el botón de "Descargar PDF"
 function mostrarBotonDescargarPDF() {
+    // Asegurarse de que el modal esté visible
+    const modal = document.getElementById("modalConfirmacion");
+    modal.style.display = "flex";
+
+    // Obtener la referencia a la parte del contenido del modal
     const modalContent = document.querySelector(".modal-content");
 
     // Crear el botón de descarga PDF
@@ -273,8 +278,10 @@ function mostrarBotonDescargarPDF() {
     btnDescargar.textContent = "Descargar PDF";
     btnDescargar.onclick = descargarPedidoPDF;
 
-    // Agregar el botón debajo del resumen en el modal
-    modalContent.appendChild(btnDescargar);
+    // Asegurarse de que el botón solo se agregue una vez
+    if (!document.querySelector(".modal-content button")) {
+        modalContent.appendChild(btnDescargar);
+    }
 }
       
      function enviarPedidoAGoogleSheets(fecha, cliente, producto, cantidad, observacion, impreso) {
