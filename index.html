@@ -68,7 +68,9 @@
 
   <h2>Formulario de Pedido</h2>
   <form id="pedidoForm">
-   <label>Código Cliente: <input type="text" id="codigoCliente" oninput="cargarNombreCliente()" autocomplete="off"></label><br><br>
+   <label>Código Cliente: 
+  <input type="text" id="codigoCliente" maxlength="5" minlength="5" 
+         oninput="cargarNombreCliente()" autocomplete="off" required pattern=".{5}"></label>
 
     <label>Nombre: <input type="text" id="nombre" required readonly></label><br><br>
     <h3>Productos</h3>
