@@ -115,6 +115,7 @@
   </div>
   <button onclick="accederAdmin()">🔑 Acceder como Administrador</button>
   <button type="button" onclick="solicitarClaveParaImpresion()">🖨 Imprimir PDF</button> <!-- Nuevo botón -->
+  <button type="button" onclick="anularPedido()">❌ Anular Pedido</button>
 
   <script>
        let clientes = {
@@ -274,6 +275,55 @@
   });
 }
 
+    function anularPedido() {
+  let nombre = document.getElementById("nombre").value;
+  let productos = document.querySelectorAll(".producto");
+  let cantidades = document.querySelectorAll(".cantidad");
+  let observaciones = document.querySelectorAll(".observacion");
+
+  if (!nombre || productos.length === 0) {
+    alert("Debe ingresar un nombre y al menos un producto.");
+    return;
+  }
+
+  // Crear un nuevo pedido con los productos en cantidad negativa
+  let fecha = obtenerFechaFormateada(); // Fecha con formato fijo
+  productos.forEach((producto, index) => {
+    let cantidadNegativa = -parseInt(cantidades[index].value); // La cantidad negativa
+    let pedidoAnulado = {
+      fecha,
+      nombre,
+      producto: producto.value,
+      cantidad: cantidadNegativa,
+      observacion: observaciones[index].value,
+      impreso: "No"
+    };
+
+    // Enviar el pedido anulado a Google Sheets
+    enviarPedidoAGoogleSheets(
+      fecha,
+      nombre,
+      producto.value,
+      cantidadNegativa,
+      observaciones[index].value,
+      "No"
+    );
+
+    // Guardar en localStorage
+    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+    pedidos.push(pedidoAnulado);
+    localStorage.setItem("pedidos", JSON.stringify(pedidos));
+  });
+
+  alert("Pedido anulado correctamente.");
+
+  // Limpiar el formulario
+  document.getElementById("pedidoForm").reset();
+  document.getElementById("productosContainer").innerHTML = "";
+  actualizarEstado(); // Actualizar estado de impresión si es necesario
+  cerrarModal(); // Cerrar modal de confirmación si está abierto
+}
+  
     function accederAdmin() {
       let clave = prompt("Ingrese la clave de administrador:");
       if (clave === "admin123") {
