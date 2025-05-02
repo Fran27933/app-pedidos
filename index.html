@@ -1,3 +1,4 @@
+HASTA ANULAR
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -86,9 +87,7 @@
   <div id="productosContainer"></div>
   <button type="button" onclick="agregarProducto()">➕ Agregar Producto</button><br><br>
   <button type="button" onclick="confirmarPedido()">✔️Confirmar Pedido</button>
-  <button type="button" onclick="anularPedido()">❌Anular Pedido</button>
-
-  <button type="button" onclick="descargarPedidoPDF()">📄 Descargar Pedido (PDF)</button> 
+  <button type="button" onclick="anularPedido()">❌Anular Pedido</button>  
 </form>
 
   <div id="adminPanel" class="admin-panel">
@@ -196,9 +195,8 @@
 
     document.getElementById("resumenPedido").innerHTML = resumen;
     document.getElementById("modalConfirmacion").style.display = "flex";
-    
-  }    
-      
+}
+
    function obtenerFechaFormateada() {
     const ahora = new Date();
     const dia = String(ahora.getDate()).padStart(2, '0');
@@ -209,14 +207,14 @@
     return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
 }
 
-function enviarPedido() {
+   function enviarPedido() {
     let nombre = document.getElementById("nombre").value;
     let productos = document.querySelectorAll(".producto");
     let cantidades = document.querySelectorAll(".cantidad");
     let observaciones = document.querySelectorAll(".observacion");
 
     let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-    let fecha = obtenerFechaFormateada(); // Fecha con formato fijo
+    let fecha = obtenerFechaFormateada(); // 👈 Fecha con formato fijo
 
     productos.forEach((producto, index) => {
         pedidos.push({
@@ -238,26 +236,19 @@ function enviarPedido() {
         );
     });
 
-    // Guardar los pedidos en localStorage
     localStorage.setItem("pedidos", JSON.stringify(pedidos));
-
-    // Mostrar alerta de éxito
     alert("Pedido enviado correctamente");
 
-    // Restablecer el formulario y limpiar los productos
     document.getElementById("pedidoForm").reset();
     document.getElementById("productosContainer").innerHTML = "";
-
-    // Actualizar el estado del sistema
     actualizarEstado();
-
-    // Cerrar el modal de confirmación
     cerrarModal();
-
-    // Mostrar el nuevo modal de descarga
-    mostrarModalDescarga();  // Llamada para mostrar el modal de descarga
 }
-      
+
+    function cerrarModal() {
+    document.getElementById("modalConfirmacion").style.display = "none";
+}
+
      function enviarPedidoAGoogleSheets(fecha, cliente, producto, cantidad, observacion, impreso) {
   var pedido = {
     fecha: fecha,
@@ -356,16 +347,6 @@ function enviarPedido() {
         }
     }
 
-    function mostrarModalDescarga() {
-    // Mostrar el modal de descarga
-    document.getElementById("modalDescarga").style.display = "flex";
-}
-
-function cerrarModalDescarga() {
-    // Cerrar el modal de descarga
-    document.getElementById("modalDescarga").style.display = "none";
-}  
-      
     function eliminarTodosLosPedidos() {
     if (confirm("¿Estás seguro de que quieres eliminar todos los pedidos? Esta acción no se puede deshacer.")) {
         localStorage.removeItem("pedidos"); // Elimina todos los pedidos guardados
@@ -566,60 +547,8 @@ function actualizarEstado() {
       XLSX.utils.book_append_sheet(wb, ws, "Pedidos");
       XLSX.writeFile(wb, "Pedidos.xlsx");
     }
-      
-    function descargarPedidoPDF() {
-    let codigo = document.getElementById("codigoCliente").value;
-    let nombre = document.getElementById("nombre").value;
-    let productos = document.querySelectorAll(".producto");
-    let cantidades = document.querySelectorAll(".cantidad");
-    let observaciones = document.querySelectorAll(".observacion");
 
-    if (!nombre || productos.length === 0) {
-        alert("Debe ingresar un nombre y al menos un producto.");
-        return;
-    }
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    doc.setFontSize(16);
-    doc.text("Pedido del Cliente", 14, 20);
-
-    doc.setFontSize(12);
-    doc.text(`Código: ${codigo}`, 14, 30);
-    doc.text(`Cliente: ${nombre}`, 14, 38);
-    doc.text(`Fecha: ${obtenerFechaFormateada()}`, 14, 46);
-
-    const datosTabla = [["Producto", "Cantidad", "Observación"]];
-    productos.forEach((producto, i) => {
-        datosTabla.push([
-            producto.value,
-            cantidades[i].value,
-            observaciones[i].value || "Sin observaciones"
-        ]);
-    });
-
-    doc.autoTable({
-        startY: 55,
-        head: [datosTabla[0]],
-        body: datosTabla.slice(1),
-        styles: { halign: 'center' },
-        headStyles: { fillColor: [0, 123, 255] }
-    });
-
-    doc.save(`Pedido_${codigo}_${new Date().getTime()}.pdf`);
-}
-
-  <!-- Modal de descarga -->
-<div id="modalDescarga" class="modal" style="display:none;">
-    <div class="modal-content">
-        <h3>¡Pedido Enviado!</h3>
-        <p>Haz clic en el siguiente botón para descargar tu comprobante:</p>
-        <button onclick="descargarPedidoPDF()">Descargar PDF</button>
-        <button onclick="cerrarModalDescarga()">Cerrar</button>
-    </div>
-</div>    
-
+  </script>
 <div id="modalConfirmacion" class="modal">
     <div class="modal-content">
         <h3>Resumen del Pedido</h3>
