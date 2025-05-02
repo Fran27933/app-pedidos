@@ -66,18 +66,27 @@
 <!-- Estado de impresión -->
 <div id="estadoImpresion" style="width: 16px; height: 16px; border-radius: 50%; background-color: blue; margin-bottom: 10px;"></div>
 
-  <h2>Formulario de Pedido</h2>
-  <form id="pedidoForm">
-   <label>Código Cliente: 
-  <input type="text" id="codigoCliente" maxlength="5" minlength="5"oninput="cargarNombreCliente()" autocomplete="off" required pattern=".{5}"></label>
+<h2>Formulario de Pedido</h2>
+<form id="pedidoForm">
+  <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
+    <label>
+      Código Cliente:
+      <input type="text" id="codigoCliente" maxlength="5" minlength="5"
+             oninput="cargarNombreCliente()" autocomplete="off" required pattern=".{5}" />
+    </label>
 
-    <label>Nombre: <input type="text" id="nombre" required readonly></label><br><br>
-    <h3>Productos</h3>
-    <div id="productosContainer"></div>
-    <button type="button" onclick="agregarProducto()">➕ Agregar Producto</button><br><br>
-    <button type="button" onclick="confirmarPedido()">Confirmar Pedido</button>
-
-  </form>
+    <label>
+      Nombre:
+      <input type="text" id="nombre" required readonly />
+    </label>
+  </div>
+  
+  <br>
+  <h3>Productos</h3>
+  <div id="productosContainer"></div>
+  <button type="button" onclick="agregarProducto()">➕ Agregar Producto</button><br><br>
+  <button type="button" onclick="confirmarPedido()">Confirmar Pedido</button>
+</form>
 
   <div id="adminPanel" class="admin-panel">
     <h2>Lista de Pedidos</h2>
