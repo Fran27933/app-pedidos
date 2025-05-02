@@ -254,33 +254,8 @@ function enviarPedido() {
     // Cerrar el modal de confirmación
     cerrarModal();
 
-    // Mostrar el botón de descarga PDF
-    mostrarBotonDescargarPDF();
-}
-
-function cerrarModal() {
-    // Cerrar el modal de confirmación
-    document.getElementById("modalConfirmacion").style.display = "none";
-}
-
-// Función para mostrar el botón de "Descargar PDF" después de enviar el pedido
-function mostrarBotonDescargarPDF() {
-    // Obtener el modal y asegurarse de que esté visible
-    const modal = document.getElementById("modalConfirmacion");
-    modal.style.display = "flex";  // Mostrar modal si no está visible
-
-    // Obtener la referencia al contenido del modal
-    const modalContent = document.querySelector(".modal-content");
-
-    // Crear el botón de descarga PDF
-    const btnDescargar = document.createElement("button");
-    btnDescargar.textContent = "Descargar PDF";
-    btnDescargar.onclick = descargarPedidoPDF;
-
-    // Verificar si el botón ya existe para evitar duplicados
-    if (!document.querySelector(".modal-content button")) {
-        modalContent.appendChild(btnDescargar);
-    }
+    // Mostrar el nuevo modal de descarga
+    mostrarModalDescarga();  // Llamada para mostrar el modal de descarga
 }
       
      function enviarPedidoAGoogleSheets(fecha, cliente, producto, cantidad, observacion, impreso) {
@@ -381,6 +356,16 @@ function mostrarBotonDescargarPDF() {
         }
     }
 
+    function mostrarModalDescarga() {
+    // Mostrar el modal de descarga
+    document.getElementById("modalDescarga").style.display = "flex";
+}
+
+function cerrarModalDescarga() {
+    // Cerrar el modal de descarga
+    document.getElementById("modalDescarga").style.display = "none";
+}  
+      
     function eliminarTodosLosPedidos() {
     if (confirm("¿Estás seguro de que quieres eliminar todos los pedidos? Esta acción no se puede deshacer.")) {
         localStorage.removeItem("pedidos"); // Elimina todos los pedidos guardados
@@ -624,6 +609,16 @@ function actualizarEstado() {
 
     doc.save(`Pedido_${codigo}_${new Date().getTime()}.pdf`);
 }
+
+  <!-- Modal de descarga -->
+<div id="modalDescarga" class="modal" style="display:none;">
+    <div class="modal-content">
+        <h3>¡Pedido Enviado!</h3>
+        <p>Haz clic en el siguiente botón para descargar tu comprobante:</p>
+        <button onclick="descargarPedidoPDF()">Descargar PDF</button>
+        <button onclick="cerrarModalDescarga()">Cerrar</button>
+    </div>
+</div>    
 
   </script>
 <div id="modalConfirmacion" class="modal">
