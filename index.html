@@ -68,19 +68,19 @@
 
 <h2>Formulario de Pedido</h2>
 <form id="pedidoForm">
-  <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
-    <label>
-      Código Cliente:
+  <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+    <div>
+      <label for="codigoCliente">Código Cliente:</label><br>
       <input type="text" id="codigoCliente" maxlength="5" minlength="5"
-             oninput="cargarNombreCliente()" autocomplete="off" required pattern=".{5}" />
-    </label>
+             oninput="cargarNombreCliente()" autocomplete="off" required pattern=".{5}">
+    </div>
 
-    <label>
-      Nombre:
-      <input type="text" id="nombre" required readonly />
-    </label>
+    <div>
+      <label for="nombre">Nombre:</label><br>
+      <input type="text" id="nombre" required readonly>
+    </div>
   </div>
-  
+
   <br>
   <h3>Productos</h3>
   <div id="productosContainer"></div>
