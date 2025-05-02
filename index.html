@@ -1,3 +1,4 @@
+HASTA ANULAR
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -206,7 +207,7 @@
     return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
 }
 
-   function enviarPedido() {
+function enviarPedido() {
     let nombre = document.getElementById("nombre").value;
     let productos = document.querySelectorAll(".producto");
     let cantidades = document.querySelectorAll(".cantidad");
@@ -215,33 +216,68 @@
     let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
     let fecha = obtenerFechaFormateada(); // 👈 Fecha con formato fijo
 
+    let rows = []; // 👈 Para generar PDF
+
     productos.forEach((producto, index) => {
+        let productoVal = producto.value;
+        let cantidadVal = parseInt(cantidades[index].value);
+        let observacionVal = observaciones[index].value;
+
+        // Guardar en localStorage
         pedidos.push({
             fecha,
             nombre,
-            producto: producto.value,
-            cantidad: parseInt(cantidades[index].value),
-            observacion: observaciones[index].value,
+            producto: productoVal,
+            cantidad: cantidadVal,
+            observacion: observacionVal,
             impreso: "No"
         });
 
+        // Enviar a Google Sheets
         enviarPedidoAGoogleSheets(
             fecha,
             nombre,
-            producto.value,
-            cantidades[index].value,
-            observaciones[index].value,
+            productoVal,
+            cantidadVal,
+            observacionVal,
             "No"
         );
+
+        // Agregar fila para el PDF
+        rows.push([
+            productoVal,
+            cantidadVal,
+            observacionVal || "Sin observaciones"
+        ]);
     });
 
+    // Guardar en localStorage
     localStorage.setItem("pedidos", JSON.stringify(pedidos));
-    alert("Pedido enviado correctamente");
 
+    // ✅ Generar PDF automáticamente
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFontSize(14);
+    doc.text(`Pedido de: ${nombre}`, 10, 10);
+    doc.text(`Fecha: ${fecha}`, 10, 20);
+
+    doc.autoTable({
+        startY: 30,
+        head: [['Producto', 'Cantidad', 'Observaciones']],
+        body: rows,
+    });
+
+    doc.save(`Pedido_${nombre}_${fecha.replace(/[/: ]/g, '_')}.pdf`);
+
+    // Limpieza visual
+    alert("Pedido enviado correctamente");
     document.getElementById("pedidoForm").reset();
     document.getElementById("productosContainer").innerHTML = "";
     actualizarEstado();
     cerrarModal();
+
+    // Mostrar botón de descarga manual, si lo usás
+    document.getElementById("descargarPDF").style.display = "inline-block";
 }
 
     function cerrarModal() {
@@ -323,6 +359,44 @@
   actualizarEstado(); // Actualizar estado de impresión si es necesario
   cerrarModal(); // Cerrar modal de confirmación si está abierto
 }
+
+    function descargarPDFPedido() {
+    let nombre = document.getElementById("nombre").value;
+    let productos = document.querySelectorAll(".producto");
+    let cantidades = document.querySelectorAll(".cantidad");
+    let observaciones = document.querySelectorAll(".observacion");
+
+    if (!nombre || productos.length === 0) {
+        alert("Debe completar un pedido antes de generar el PDF.");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    let fecha = obtenerFechaFormateada();
+
+    doc.setFontSize(14);
+    doc.text(`Pedido de: ${nombre}`, 10, 10);
+    doc.text(`Fecha: ${fecha}`, 10, 20);
+
+    let rows = [];
+
+    productos.forEach((producto, index) => {
+        rows.push([
+            producto.value,
+            cantidades[index].value,
+            observaciones[index].value || "Sin observaciones"
+        ]);
+    });
+
+    doc.autoTable({
+        startY: 30,
+        head: [['Producto', 'Cantidad', 'Observaciones']],
+        body: rows,
+    });
+
+    doc.save(`Pedido_${nombre}_${fecha.replace(/[/: ]/g, '_')}.pdf`);
+}  
   
     function accederAdmin() {
       let clave = prompt("Ingrese la clave de administrador:");
