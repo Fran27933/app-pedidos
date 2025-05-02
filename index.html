@@ -197,10 +197,8 @@
     document.getElementById("resumenPedido").innerHTML = resumen;
     document.getElementById("modalConfirmacion").style.display = "flex";
     
-        // Llamar a la función para descargar el PDF del pedido
-    descargarPedidoPDF();    
-}
-
+  }    
+      
    function obtenerFechaFormateada() {
     const ahora = new Date();
     const dia = String(ahora.getDate()).padStart(2, '0');
@@ -211,46 +209,55 @@
     return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
 }
 
-   function enviarPedido() {
+ function enviarPedido() {
     let nombre = document.getElementById("nombre").value;
     let productos = document.querySelectorAll(".producto");
     let cantidades = document.querySelectorAll(".cantidad");
     let observaciones = document.querySelectorAll(".observacion");
 
-    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-    let fecha = obtenerFechaFormateada(); // 👈 Fecha con formato fijo
+    if (!nombre || productos.length === 0) {
+        alert("Debe ingresar un nombre y al menos un producto.");
+        return;
+    }
+
+    // Aquí, generamos el resumen como antes
+    let resumen = `<p><strong>Cliente:</strong> ${nombre}</p>`;
+    resumen += `<table border="1" style="width: 100%; text-align: center;">
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Observaciones</th>
+                    </tr>`;
 
     productos.forEach((producto, index) => {
-        pedidos.push({
-            fecha,
-            nombre,
-            producto: producto.value,
-            cantidad: parseInt(cantidades[index].value),
-            observacion: observaciones[index].value,
-            impreso: "No"
-        });
-
-        enviarPedidoAGoogleSheets(
-            fecha,
-            nombre,
-            producto.value,
-            cantidades[index].value,
-            observaciones[index].value,
-            "No"
-        );
+        resumen += `<tr>
+                        <td>${producto.value}</td>
+                        <td>${cantidades[index].value}</td>
+                        <td>${observaciones[index].value || "Sin observaciones"}</td>
+                    </tr>`;
     });
 
-    localStorage.setItem("pedidos", JSON.stringify(pedidos));
-    alert("Pedido enviado correctamente");
+    resumen += `</table>`;
 
-    document.getElementById("pedidoForm").reset();
-    document.getElementById("productosContainer").innerHTML = "";
-    actualizarEstado();
-    cerrarModal();
-}
+    // Mostrar el resumen en el modal
+    document.getElementById("resumenPedido").innerHTML = resumen;
 
-    function cerrarModal() {
-    document.getElementById("modalConfirmacion").style.display = "none";
+    // Crear el botón de descarga
+    const btnDescargar = document.createElement("button");
+    btnDescargar.textContent = "Descargar PDF";
+    btnDescargar.onclick = descargarPedidoPDF;
+
+    // Insertar el botón debajo del resumen en el modal
+    const modalContent = document.querySelector(".modal-content");
+    modalContent.appendChild(btnDescargar);
+
+    // Cambiar el texto del botón de enviar a "Pedido Enviado"
+    const enviarBtn = document.querySelector("button[onclick='enviarPedido()']");
+    enviarBtn.textContent = "Pedido Enviado";
+    enviarBtn.disabled = true; // Desactivar el botón "Enviar Pedido"
+
+    // Mostrar el modal con el resumen
+    document.getElementById("modalConfirmacion").style.display = "flex";
 }
 
      function enviarPedidoAGoogleSheets(fecha, cliente, producto, cantidad, observacion, impreso) {
