@@ -107,8 +107,14 @@
   <button type="button" onclick="solicitarClaveParaImpresion()">🖨 Imprimir PDF</button> <!-- Nuevo botón -->
 
   <script>
-    let clientes = { "GEN89": "GENERACIÓN", "BIT60": "BITFARMS", "ING48": "INGESA", "IPM57": "IPM" };
-    let productosDisponibles = ["Producto A", "Producto B", "Producto C", "Producto D"];
+    let clientes = { "GEN89": "GENERACIÓN", "BIT60": "BITFARMS", "ING48": "INGESA", "IPM57": "IPM", "CIS47": "CISAR", 
+                   "VER61": "VERO", "SEN48": "SENASA", "SOL61": "SOLARO", "HYD61": "HYDROBOT" };
+    let productosDisponibles = ["PRINCIPAL", "OPCIONAL", "ENSALADA 1", "ENSALADA 2", "ENSALADA 3", "ENSALADA 4",
+                               "ENSALADA 5", "ENSALADA 6", "ENSALADA 7", "ENSALADA 8", "ENSALADA 9", "ENSALADA 10",
+                               "ENSALADA 11", "ENSALADA 12", "ENSALADA 13, ""ENSALADA 14", "ENSALADA 15", "ENSALADA 19", 
+                               "ENSALADA 20", "ENSALADA 21"  "ENSALADA 103", "BIFE DE TERNERA", "BIFE DE POLLO", "PATA MUSLO AL HORNO", "LOMO DE ATUN", 
+                               "MILANESA DE POLLO", "MILANESA DE TERNERA", "TARTA DE JyQ", "TARTA DE ATUN", "OMELETTE", "PURE", 
+                               "PURE MIXTO", "PAPA FRITA", "ARROZ", "VERDURA AL HORNO", "REFRIGERIO"]
 
    
     function cargarNombreCliente() {
