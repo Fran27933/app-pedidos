@@ -67,22 +67,20 @@
 <div id="estadoImpresion" style="width: 16px; height: 16px; border-radius: 50%; background-color: blue; margin-bottom: 10px;"></div>
 
 <h2>Formulario de Pedido</h2>
-<div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-  <form id="pedidoForm" style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
-    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 1px;">
+<div style="display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw;">
+  <form id="pedidoForm" style="display: flex; flex-direction: column; align-items: center; gap: 8px; max-width: 90%; width: 100%; padding: 10px;">
+    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
       <div>
-        <label for="codigoCliente">Código Cliente:</label><br>
+        <label for="codigoCliente" style="font-size: 1.2em;">Código Cliente:</label><br>
         <input type="text" id="codigoCliente" maxlength="5" minlength="5"
-               oninput="cargarNombreCliente()" autocomplete="off" required pattern=".{5}">
+               oninput="cargarNombreCliente()" autocomplete="off" required pattern=".{5}" style="width: 100%; padding: 8px; font-size: 1em;">
       </div>
 
       <div>
-        <label for="nombre">Nombre:</label><br>
-        <input type="text" id="nombre" required readonly>
+        <label for="nombre" style="font-size: 1.2em;">Nombre:</label><br>
+        <input type="text" id="nombre" required readonly style="width: 100%; padding: 8px; font-size: 1em;">
       </div>
     </div>
-
-    <br>
   </form>
 </div>
   <h3>Productos</h3>
