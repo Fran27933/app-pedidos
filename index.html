@@ -209,57 +209,74 @@
     return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
 }
 
- function enviarPedido() {
+function enviarPedido() {
     let nombre = document.getElementById("nombre").value;
     let productos = document.querySelectorAll(".producto");
     let cantidades = document.querySelectorAll(".cantidad");
     let observaciones = document.querySelectorAll(".observacion");
 
-    if (!nombre || productos.length === 0) {
-        alert("Debe ingresar un nombre y al menos un producto.");
-        return;
-    }
-
-    // Aquí, generamos el resumen como antes
-    let resumen = `<p><strong>Cliente:</strong> ${nombre}</p>`;
-    resumen += `<table border="1" style="width: 100%; text-align: center;">
-                    <tr>
-                        <th>Producto</th>
-                        <th>Cantidad</th>
-                        <th>Observaciones</th>
-                    </tr>`;
+    // Obtener los datos de localStorage y la fecha
+    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+    let fecha = obtenerFechaFormateada();
 
     productos.forEach((producto, index) => {
-        resumen += `<tr>
-                        <td>${producto.value}</td>
-                        <td>${cantidades[index].value}</td>
-                        <td>${observaciones[index].value || "Sin observaciones"}</td>
-                    </tr>`;
+        pedidos.push({
+            fecha,
+            nombre,
+            producto: producto.value,
+            cantidad: parseInt(cantidades[index].value),
+            observacion: observaciones[index].value,
+            impreso: "No"
+        });
+
+        // Enviar el pedido a Google Sheets
+        enviarPedidoAGoogleSheets(
+            fecha,
+            nombre,
+            producto.value,
+            cantidades[index].value,
+            observaciones[index].value,
+            "No"
+        );
     });
 
-    resumen += `</table>`;
+    // Guardar los pedidos en localStorage
+    localStorage.setItem("pedidos", JSON.stringify(pedidos));
 
-    // Mostrar el resumen en el modal
-    document.getElementById("resumenPedido").innerHTML = resumen;
+    // Mostrar alerta de éxito
+    alert("Pedido enviado correctamente");
 
-    // Crear el botón de descarga
+    // Restablecer el formulario y limpiar los productos
+    document.getElementById("pedidoForm").reset();
+    document.getElementById("productosContainer").innerHTML = "";
+
+    // Actualizar el estado del sistema
+    actualizarEstado();
+
+    // Cerrar el modal de confirmación
+    cerrarModal();
+
+    // Mostrar el botón de descarga PDF
+    mostrarBotonDescargarPDF();
+}
+
+function cerrarModal() {
+    document.getElementById("modalConfirmacion").style.display = "none";
+}
+
+// Función para mostrar el botón de "Descargar PDF"
+function mostrarBotonDescargarPDF() {
+    const modalContent = document.querySelector(".modal-content");
+
+    // Crear el botón de descarga PDF
     const btnDescargar = document.createElement("button");
     btnDescargar.textContent = "Descargar PDF";
     btnDescargar.onclick = descargarPedidoPDF;
 
-    // Insertar el botón debajo del resumen en el modal
-    const modalContent = document.querySelector(".modal-content");
+    // Agregar el botón debajo del resumen en el modal
     modalContent.appendChild(btnDescargar);
-
-    // Cambiar el texto del botón de enviar a "Pedido Enviado"
-    const enviarBtn = document.querySelector("button[onclick='enviarPedido()']");
-    enviarBtn.textContent = "Pedido Enviado";
-    enviarBtn.disabled = true; // Desactivar el botón "Enviar Pedido"
-
-    // Mostrar el modal con el resumen
-    document.getElementById("modalConfirmacion").style.display = "flex";
 }
-
+      
      function enviarPedidoAGoogleSheets(fecha, cliente, producto, cantidad, observacion, impreso) {
   var pedido = {
     fecha: fecha,
