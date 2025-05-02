@@ -112,9 +112,10 @@
 
    
     function cargarNombreCliente() {
-      let codigo = document.getElementById("codigoCliente").value;
-      document.getElementById("nombre").value = clientes[codigo] || "";
-    }
+  let codigo = document.getElementById("codigoCliente").value.toUpperCase();
+  document.getElementById("codigoCliente").value = codigo; // opcional: muestra el código en mayúsculas en el input
+  document.getElementById("nombre").value = clientes[codigo] || "";
+}
 
   function agregarProducto() {
     let container = document.getElementById("productosContainer");
