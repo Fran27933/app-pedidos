@@ -196,6 +196,9 @@
 
     document.getElementById("resumenPedido").innerHTML = resumen;
     document.getElementById("modalConfirmacion").style.display = "flex";
+    
+        // Llamar a la función para descargar el PDF del pedido
+    descargarPedidoPDF();    
 }
 
    function obtenerFechaFormateada() {
