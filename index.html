@@ -85,7 +85,8 @@
   <h3>Productos</h3>
   <div id="productosContainer"></div>
   <button type="button" onclick="agregarProducto()">➕ Agregar Producto</button><br><br>
-  <button type="button" onclick="confirmarPedido()">Confirmar Pedido</button>
+  <button type="button" onclick="confirmarPedido()">✔️Confirmar Pedido</button>
+  <button type="button" onclick="anularPedido()">❌Anular Pedido</button>  
 </form>
 
   <div id="adminPanel" class="admin-panel">
@@ -115,7 +116,6 @@
   </div>
   <button onclick="accederAdmin()">🔑 Acceder como Administrador</button>
   <button type="button" onclick="solicitarClaveParaImpresion()">🖨 Imprimir PDF</button> <!-- Nuevo botón -->
-  <button type="button" onclick="anularPedido()">❌ Anular Pedido</button>
 
   <script>
        let clientes = {
