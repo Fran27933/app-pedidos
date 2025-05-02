@@ -86,6 +86,7 @@
   <div id="productosContainer"></div>
   <button type="button" onclick="agregarProducto()">➕ Agregar Producto</button><br><br>
   <button type="button" onclick="confirmarPedido()">Confirmar Pedido</button>
+  <button type="button" onclick="anularPedido()">❌ Anular Pedido</button> 
 </form>
 
   <div id="adminPanel" class="admin-panel">
@@ -194,7 +195,18 @@
     document.getElementById("resumenPedido").innerHTML = resumen;
     document.getElementById("modalConfirmacion").style.display = "flex";
 }
+      
+function anularPedido() {
+  let nombre = document.getElementById("nombre").value;
+  let productos = document.querySelectorAll(".producto");
+  let cantidades = document.querySelectorAll(".cantidad");
+  let observaciones = document.querySelectorAll(".observacion");
 
+  if (!nombre || productos.length === 0) {
+    alert("Debe ingresar un nombre y al menos un producto.");
+    return;
+  }
+    
    function obtenerFechaFormateada() {
     const ahora = new Date();
     const dia = String(ahora.getDate()).padStart(2, '0');
