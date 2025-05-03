@@ -42,6 +42,38 @@ HASTA ANULAR
     text-align: center; 
 }
 
+  html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* usa center si quieres que todo quede verticalmente al medio */
+  background-color: #f4f4f4;
+  padding: 20px;
+}
+
+form {
+  width: 100%;
+  max-width: 600px; /* Ajusta según tu diseño */
+}
+
+#productosContainer {
+  width: 100%;
+}
+
+.producto-item {
+  flex-direction: column; /* para que se vea ordenado en móviles */
+  align-items: flex-start;
+  width: 100%;
+}      
+
     </style>
 </head>
 
