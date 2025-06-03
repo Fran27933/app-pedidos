@@ -462,9 +462,9 @@ function enviarPedido() {
   function mostrarPedidos() {
   let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
 
-  // ✅ Quedarse solo con los últimos 3 pedidos
-  if (pedidos.length > 3) {
-    pedidos = pedidos.slice(-3); // conservar solo los últimos 3
+  // ✅ Quedarse solo con los últimos 60 pedidos
+  if (pedidos.length > 60) {
+    pedidos = pedidos.slice(-60); // conservar solo los últimos 60
     localStorage.setItem("pedidos", JSON.stringify(pedidos)); // actualizar localStorage
   }
 
