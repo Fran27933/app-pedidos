@@ -8,269 +8,120 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            min-height: 100vh; /* Para que el fondo ocupe toda la altura */
-        }
-
-        form, .admin-panel {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px; /* Espacio entre el form y el panel admin/botones */
-            width: 100%;
-            max-width: 600px; /* Ancho máximo para el formulario */
-            box-sizing: border-box;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            overflow-x: auto; /* Para tablas grandes en móvil */
-            display: block; /* Permite scroll horizontal */
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: center;
-            white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
-        }
-
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 16px;
-            margin: 5px; /* Espacio entre botones */
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover:not(:disabled) {
-            background-color: #0056b3;
-        }
-
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        .admin-panel {
-            display: none;
-            margin-top: 20px;
-        }
-
-        /* Estilos específicos para productos */
         .producto-item {
             display: flex;
-            flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
-            align-items: flex-end; /* Alinea los elementos en la parte inferior */
+            align-items: center;
             gap: 10px;
-            margin-bottom: 15px;
-            padding: 10px;
-            border: 1px solid #eee;
-            border-radius: 5px;
-            background-color: #fcfcfc;
-            box-sizing: border-box;
+            margin-bottom: 5px;
         }
 
         .producto-item label {
             display: flex;
             flex-direction: column;
             font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .producto-item select,
-        .producto-item input[type="number"],
-        .producto-item textarea {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-
-        .producto-item select {
-            width: 180px; /* Ancho fijo para el select de producto */
-        }
-
-        .producto-item input[type="number"] {
-            width: 70px; /* Ancho fijo para la cantidad */
-            text-align: center;
         }
 
         .producto-item textarea {
-            flex-grow: 1; /* Permite que la observación ocupe el espacio restante */
-            min-width: 150px; /* Ancho mínimo para la observación */
-            max-width: 100%;
-            min-height: 40px;
+            width: 150px;
+            min-height: 30px;
             resize: vertical;
-        }
-
-        .producto-item .eliminar-producto {
-            background-color: #dc3545;
-            padding: 8px 12px;
+            padding: 5px;
             font-size: 14px;
-            margin-left: auto; /* Empuja el botón "X" a la derecha */
-        }
-
-        .producto-item .eliminar-producto:hover {
-            background-color: #c82333;
-        }
-
-        /* Estilos del modal */
-        .modal {
-            display: none; /* Oculto por defecto */
-            position: fixed;
-            z-index: 1000; /* Asegura que esté por encima de todo */
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto; /* Habilita scroll si el contenido es muy grande */
-            background-color: rgba(0, 0, 0, 0.6); /* Fondo semi-transparente */
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: auto;
-            padding: 30px;
-            border: 1px solid #888;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            position: relative;
-            animation-name: animatetop;
-            animation-duration: 0.4s;
-            text-align: left; /* Alinea el contenido del modal a la izquierda */
-        }
-
-        @keyframes animatetop {
-            from {top: -300px; opacity: 0}
-            to {top: 0; opacity: 1}
-        }
-
-        .modal-content h3 {
-            text-align: center;
-            color: #0056b3;
-            margin-bottom: 20px;
-        }
-
-        .modal-content button {
-            display: inline-block;
-            width: auto;
-            margin: 10px 5px;
-            font-size: 16px;
-        }
-
-        .modal-content #resumenPedido {
-            max-height: 300px; /* Altura máxima para el resumen de productos */
-            overflow-y: auto; /* Habilita scroll si hay muchos productos */
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 1px solid #eee;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-        .modal-content #resumenPedido table {
-            width: 100%; /* Asegura que la tabla del resumen ocupe todo el ancho */
-            margin-top: 10px;
-            margin-bottom: 0;
-        }
-        .modal-content #resumenPedido th,
-        .modal-content #resumenPedido td {
-            font-size: 13px;
-            padding: 8px;
-        }
-
-        /* Mensajes de estado en el modal */
-        .modal-message {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 4px;
-            text-align: center;
-            font-weight: bold;
-            display: none; /* Oculto por defecto, se muestra con JS */
-        }
-        .modal-message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            display: block;
-        }
-        .modal-message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            display: block;
-        }
-
-        /* Estilos para el estado de impresión */
-        #estadoImpresion, #estadoImpresionAdmin {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: blue; /* Azul por defecto, verde si hay pendientes */
-            margin-bottom: 10px;
-            transition: background-color 0.5s ease;
-        }
-        #nuevoPedido {
-            display: none;
-            background-color: yellow;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-weight: bold;
-            color: #333;
-            margin-left: 10px;
-            animation: pulse 1.5s infinite; /* Animación para el cartel */
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
         }
         
-        /* Contenedor de botones de admin para que estén en una línea */
-        .admin-buttons {
+        .modal { 
+            display: none; 
+            position: fixed; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0, 0, 0, 0.5); 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 1000; /* Asegurarse de que esté por encima de todo */
+        }
+        .modal-content { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            text-align: center; 
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .modal-content button {
+            margin: 5px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+        .modal-content button:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+        .modal-content button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .modal-content .close-button {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #aaa;
+        }
+        .modal-content .close-button:hover {
+            color: #000;
+        }
+
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
             display: flex;
-            flex-wrap: wrap; /* Permite que los botones se envuelvan */
-            justify-content: center;
-            gap: 10px; /* Espacio entre los botones */
-            margin-top: 20px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* usa center si quieres que todo quede verticalmente al medio */
+            background-color: #f4f4f4;
+            padding: 20px;
         }
-        .admin-buttons button {
-            flex-grow: 1; /* Permite que los botones se expandan */
-            max-width: 200px; /* Ancho máximo para cada botón */
+
+        form {
+            width: 100%;
+            max-width: 600px; /* Ajusta según tu diseño */
+            background: white; /* Añadido para que el formulario tenga fondo */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px #aaa;
+            margin-bottom: 20px; /* Espacio debajo del formulario */
         }
+
+        #productosContainer {
+            width: 100%;
+        }     
+        
+        /* Estilos generales para botones y tablas */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid black; padding: 10px; text-align: center; }
+        th { background-color: #007bff; color: white; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; }
+        button:hover { background-color: #0056b3; }
+        .admin-panel { display: none; margin-top: 20px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px #aaa; width: 100%; max-width: 800px; } /* Ajustado el ancho */
     </style>
 </head>
 <body>
-<div id="estadoImpresion" style="width: 20px; height: 20px; border-radius: 50%; background-color: blue; margin-bottom: 10px;"></div>
+<div id="estadoImpresion" style="width: 16px; height: 16px; border-radius: 50%; background-color: blue; margin-bottom: 10px;"></div>
 
 <h2>Formulario de Pedido</h2>
 <form id="pedidoForm">
@@ -291,13 +142,13 @@
     <h3>Productos</h3>
     <div id="productosContainer"></div>
     <button type="button" onclick="agregarProducto()">➕ Agregar Producto</button><br><br>
-    <button type="button" onclick="confirmarPedido()">✔️ Confirmar Pedido</button>
-    <button type="button" onclick="anularPedido()">❌ Anular Pedido</button>
+    <button type="button" onclick="abrirModalConfirmacion()">✔️Confirmar Pedido</button>
+    <button type="button" onclick="anularPedido()">❌Anular Pedido</button>   
 </form>
 
 <div id="adminPanel" class="admin-panel">
     <h2>Lista de Pedidos</h2>
-    <div style="display: flex; align-items: center; margin-bottom: 10px; justify-content: center;">
+    <div style="display: flex; align-items: center; margin-bottom: 10px;">
         <div id="estadoImpresionAdmin" style="width: 20px; height: 20px; border-radius: 50%; background-color: blue; margin-right: 10px;"></div>
         <div id="nuevoPedido" style="display: none; background-color: yellow; padding: 5px 10px; border-radius: 5px; font-weight: bold;">Nuevo Pedido</div>
     </div>
@@ -315,100 +166,85 @@
         </thead>
         <tbody></tbody>
     </table>
-    <div class="admin-buttons">
-        <button onclick="generarPDF()">📄 Imprimir Pedidos</button>
-        <button onclick="descargarExcel()">📥 Descargar Excel</button>
-        <button onclick="eliminarTodosLosPedidos()">🗑 Eliminar Todos</button>
-        <button onclick="generarPDFCompleto()">Generar PDF Completo</button>
-    </div>
+    <button onclick="generarPDF()">📄 Imprimir Pedidos</button>
+    <button onclick="descargarExcel()">📥 Descargar Excel</button>
+    <button onclick="eliminarTodosLosPedidos()">🗑 Eliminar Todos</button>
+    <button onclick="generarPDFCompleto()">Generar PDF Completo</button>
 </div>
 <button onclick="accederAdmin()">🔑 Acceder como Administrador</button>
-<button type="button" onclick="solicitarClaveParaImpresion()">🖨 Imprimir PDF de Pendientes</button>
+<button type="button" onclick="solicitarClaveParaImpresion()">🖨 Imprimir PDF</button>
 
 <script>
     let clientes = {
         "GEN89": "GENERACIÓN", "BIT60": "BITFARMS", "ING48": "INGESA", "IPM57": "IPM", "CIS47": "CISAR",
         "VER61": "VERO", "SEN48": "SENASA", "SOL61": "SOLARO", "HYD61": "HYDROBOT", "GOD78": "GODOY CRUZ", "SAL10": "SALTO"
     };
-
+    
     let productosDisponibles = [
         "PRINCIPAL", "OPCIONAL", "ENSALADA 1", "ENSALADA 2", "ENSALADA 3", "ENSALADA 4",
         "ENSALADA 5", "ENSALADA 6", "ENSALADA 7", "ENSALADA 8", "ENSALADA 9", "ENSALADA 10",
-        "ENSALADA 11", "ENSALADA 12", "ENSALADA 13", "ENSALADA 14", "ENSALADA 15", "ENSALADA 19",
-        "ENSALADA 20", "ENSALADA 21", "ENSALADA COMUN", "BIFE DE TERNERA", "BIFE DE POLLO",
-        "PATA MUSLO AL HORNO", "LOMO DE ATUN", "MILANESA DE POLLO", "MILANESA DE TERNERA",
-        "TARTA DE JyQ", "TARTA DE ATUN", "TARTA DE POLLO", "OMELETTE", "PURE", "PURE MIXTO", "PAPA FRITA",
+        "ENSALADA 11", "ENSALADA 12", "ENSALADA 13", "ENSALADA 14", "ENSALADA 15", "ENSALADA 19", 
+        "ENSALADA 20", "ENSALADA 21", "ENSALADA COMUN", "BIFE DE TERNERA", "BIFE DE POLLO", 
+        "PATA MUSLO AL HORNO", "LOMO DE ATUN", "MILANESA DE POLLO", "MILANESA DE TERNERA", 
+        "TARTA DE JyQ", "TARTA DE ATUN", "TARTA DE POLLO", "OMELETTE", "PURE", "PURE MIXTO", "PAPA FRITA", 
         "ARROZ", "VERDURA AL HORNO", "REFRIGERIO", "OTROS", "GASESOSA"
     ];
 
-    // Se agrega esta línea para obtener una referencia global al botón del modal.
-    // Es importante que esté definida antes de que se use en la función enviarPedido().
-    let btnEnviarPedidoModal;
-
-    document.addEventListener('DOMContentLoaded', (event) => {
-        // Asegúrate de que el DOM esté cargado antes de intentar obtener el elemento
-        btnEnviarPedidoModal = document.getElementById('btnEnviarPedidoModal');
-        // También inicializa el estado del modal (si no se hace por CSS)
-        document.getElementById("modalConfirmacion").style.display = "none";
-        actualizarEstado(); // Llama esto al cargar la página para inicializar los círculos de estado
-    });
+    // Referencias a elementos del DOM para evitar buscarlos repetidamente
+    const modalConfirmacion = document.getElementById("modalConfirmacion");
+    const resumenPedidoDiv = document.getElementById("resumenPedido");
+    const btnEnviarModal = document.getElementById("btnEnviarModal"); // Nuevo ID para el botón de enviar dentro del modal
+    const modalStatusMessage = document.getElementById("modalStatusMessage"); // Nuevo elemento para el mensaje de estado en el modal
+    const codigoClienteInput = document.getElementById("codigoCliente");
+    const nombreClienteInput = document.getElementById("nombre");
+    const productosContainer = document.getElementById("productosContainer");
+    const pedidoForm = document.getElementById("pedidoForm");
 
 
     function cargarNombreCliente() {
-        let codigo = document.getElementById("codigoCliente").value.toUpperCase();
-        document.getElementById("codigoCliente").value = codigo;
-        document.getElementById("nombre").value = clientes[codigo] || "";
+        let codigo = codigoClienteInput.value.toUpperCase();
+        codigoClienteInput.value = codigo; 
+        nombreClienteInput.value = clientes[codigo] || "";
     }
 
     function agregarProducto() {
-        let container = document.getElementById("productosContainer");
         let div = document.createElement("div");
         div.className = "producto-item";
 
         let opcionesProductos = productosDisponibles.map(p => `<option value="${p}">${p}</option>`).join("");
 
         div.innerHTML = `
-            <label>Producto:
+            <label>Producto: 
                 <select class="producto">${opcionesProductos}</select>
             </label>
-            <label>Cantidad:
+            <label>Cantidad: 
                 <input type="number" class="cantidad" min="1" required style="width: 60px;" value="1">
             </label>
-            <label>Observación:
+            <label>Observación: 
                 <textarea class="observacion" rows="4" style="width: 300px; height: 40px;" placeholder="Escribe aquí..."></textarea>
             </label>
             <button type="button" class="eliminar-producto" onclick="this.parentNode.remove()">❌</button>
             <br>
         `;
 
-        container.appendChild(div);
+        productosContainer.appendChild(div);
     }
 
-    function confirmarPedido() {
-        let nombre = document.getElementById("nombre").value;
+    // --- NUEVA FUNCIÓN: Abrir Modal de Confirmación ---
+    function abrirModalConfirmacion() {
+        let nombre = nombreClienteInput.value;
         let productos = document.querySelectorAll(".producto");
-        let cantidades = document.querySelectorAll(".cantidad"); // Asegúrate de obtener todas las cantidades
-        let observaciones = document.querySelectorAll(".observacion"); // Asegúrate de obtener todas las observaciones
 
-        // Validar que al menos el nombre y un producto estén presentes
-        if (!nombre || productos.length === 0 || !productos[0].value) { // Verifica también que el primer producto tenga un valor
-            alert("Debes ingresar un código de cliente válido (con nombre) y al menos un producto seleccionado.");
+        if (!nombre || productos.length === 0) {
+            alert("Debes ingresar un nombre y al menos un producto.");
             return;
         }
 
-        // Validar que todos los productos agregados tengan un valor de producto y cantidad
-        let isValid = true;
-        productos.forEach((producto, index) => {
-            if (!producto.value || !cantidades[index].value || parseInt(cantidades[index].value) <= 0) {
-                isValid = false;
-            }
-        });
-
-        if (!isValid) {
-            alert("Por favor, asegúrate de que todos los productos agregados tengan un producto seleccionado y una cantidad válida (mayor que 0).");
-            return;
-        }
-
+        // Limpiar cualquier mensaje de estado previo en el modal
+        modalStatusMessage.textContent = '';
+        modalStatusMessage.className = ''; // Limpiar clases de estado
+        btnEnviarModal.disabled = false; // Asegurarse de que el botón esté habilitado al abrir el modal
+        btnEnviarModal.textContent = 'Enviar Pedido'; // Restaurar texto del botón
 
         let resumen = `<p><strong>Cliente:</strong> ${nombre}</p>`;
         resumen += `<table border="1" style="width: 100%; text-align: center;">
@@ -419,6 +255,8 @@
                             </tr>`;
 
         productos.forEach((producto, index) => {
+            let cantidades = document.querySelectorAll(".cantidad");
+            let observaciones = document.querySelectorAll(".observacion");
             resumen += `<tr>
                                 <td>${producto.value}</td>
                                 <td>${cantidades[index].value}</td>
@@ -428,18 +266,8 @@
 
         resumen += `</table>`;
 
-        document.getElementById("resumenPedido").innerHTML = resumen;
-        document.getElementById("modalConfirmacion").style.display = "flex"; // Muestra el modal
-        // Asegúrate de resetear el estado del botón y mensaje del modal al abrirlo
-        if (btnEnviarPedidoModal) {
-            btnEnviarPedidoModal.disabled = false;
-            btnEnviarPedidoModal.textContent = 'Enviar Pedido';
-        }
-        const mensajeEstadoModal = document.getElementById('mensajeEstadoModal');
-        if (mensajeEstadoModal) {
-            mensajeEstadoModal.textContent = '';
-            mensajeEstadoModal.className = 'modal-message';
-        }
+        resumenPedidoDiv.innerHTML = resumen;
+        modalConfirmacion.style.display = "flex"; // Mostrar el modal
     }
 
     function obtenerFechaFormateada() {
@@ -469,7 +297,7 @@
         try {
             const response = await fetch("https://script.google.com/macros/s/AKfycbzEOzjUzvrKH994MYlF_Rp_uSflvco6wvLDV9IN5hbi8u6ncBjEDv2QDhKU1jyRvNs/exec", {
                 method: 'POST',
-                mode: 'no-cors', // Importante para Apps Script si no manejas CORS específicamente
+                mode: 'no-cors', // Importante para Apps Script
                 body: JSON.stringify(pedido),
                 headers: {
                     'Content-Type': 'application/json'
@@ -478,9 +306,10 @@
             console.log(`Intento ${retryCount + 1}: Solicitud para "${producto}" enviada a Google Sheets. Respondió:`, response.type);
             // Debido a 'no-cors', no podemos verificar el estado HTTP exacto.
             // Asumimos éxito si no hay un error de red y la promesa se resuelve.
+            return true; // Indica éxito
         } catch (error) {
             console.error(`Intento ${retryCount + 1}: Error al guardar pedido "${producto}" en Google Sheets:`, error);
-
+            
             if (retryCount < MAX_RETRIES) {
                 const delay = BASE_DELAY_MS * Math.pow(2, retryCount) + Math.floor(Math.random() * 500); // Retardo exponencial con jitter
                 console.log(`Reintentando envío para "${producto}" en ${delay / 1000} segundos... (Intento ${retryCount + 1} de ${MAX_RETRIES})`);
@@ -493,53 +322,38 @@
         }
     }
 
-    // --- FUNCION PRINCIPAL DE ENVIO DE PEDIDOS ---
+    // --- FUNCION PRINCIPAL DE ENVIO DE PEDIDOS (llamada desde el modal) ---
     async function enviarPedido() {
-        // Obtener referencia al botón y al div de mensaje dentro del modal
-        const btnEnviarPedidoModal = document.getElementById('btnEnviarPedidoModal');
-        const mensajeEstadoModal = document.getElementById('mensajeEstadoModal');
+        // Deshabilitar el botón de envío en el modal y cambiar su texto
+        btnEnviarModal.disabled = true;
+        btnEnviarModal.textContent = 'Enviando...';
+        modalStatusMessage.textContent = 'Enviando pedido, por favor espere...';
+        modalStatusMessage.className = 'message-container'; // Solo para asegurar que se muestre
 
-        // 1. Deshabilitar el botón y mostrar un mensaje de carga
-        if (btnEnviarPedidoModal) {
-            btnEnviarPedidoModal.disabled = true;
-            btnEnviarPedidoModal.textContent = 'Enviando...';
-        }
-        if (mensajeEstadoModal) {
-            mensajeEstadoModal.textContent = 'Procesando tu solicitud, por favor espera...';
-            mensajeEstadoModal.className = 'modal-message'; // Reinicia las clases de mensaje
-        }
-
-        let nombre = document.getElementById("nombre").value;
+        let nombre = nombreClienteInput.value;
         let productos = document.querySelectorAll(".producto");
         let cantidades = document.querySelectorAll(".cantidad");
         let observaciones = document.querySelectorAll(".observacion");
 
-        // Esta validación se hizo en confirmarPedido(), pero es buena práctica mantenerla aquí también
-        // para asegurar que no se envíe con datos vacíos si el modal se abre de otra forma.
-        if (!nombre || productos.length === 0 || !productos[0].value) {
-            alert("Debes ingresar un nombre y al menos un producto.");
-            if (btnEnviarPedidoModal) {
-                btnEnviarPedidoModal.disabled = false;
-                btnEnviarPedidoModal.textContent = 'Enviar Pedido';
-            }
-            if (mensajeEstadoModal) {
-                mensajeEstadoModal.textContent = '';
-                mensajeEstadoModal.className = 'modal-message';
-            }
+        // Esta validación ya se hace al abrir el modal, pero la mantenemos por seguridad.
+        if (!nombre || productos.length === 0) {
+            modalStatusMessage.textContent = "Error: Faltan datos del pedido. Por favor, reabrí el formulario.";
+            modalStatusMessage.className = 'message-container error-message';
+            btnEnviarModal.disabled = false; // Re-habilitar si hay un error en la validación local
+            btnEnviarModal.textContent = 'Enviar Pedido';
             return;
         }
 
         let pedidosEnLocalStorage = JSON.parse(localStorage.getItem("pedidos")) || [];
         let fecha = obtenerFechaFormateada();
-
-        let rowsParaPdf = [];
-        let hayErroresDeEnvio = false; // Bandera para saber si hubo algún fallo
+        let rowsParaPdf = []; // Para el PDF que se genera localmente
+        let hayErroresDeEnvio = false; // Bandera para saber si hubo algún fallo en Google Sheets
 
         // Recorremos los productos usando un bucle for...of para poder usar await
-        for (let i = 0; i < productos.length; i++) {
-            let productoVal = products[i].value; // Cambié 'products' a 'productos'
-            let cantidadVal = parseInt(cantidades[i].value);
-            let observacionVal = observaciones[i].value;
+        for (let i = 0; i < products.length; i++) {
+            let productoVal = products[i].value;
+            let cantidadVal = parseInt(quantities[i].value);
+            let observacionVal = observations[i].value;
 
             const pedidoData = {
                 fecha,
@@ -551,11 +365,11 @@
             };
 
             // Guarda en localStorage *inmediatamente* (es local y rápido)
+            // Esto asegura que el pedido se guarde localmente aunque falle el envío a Google Sheets.
             pedidosEnLocalStorage.push(pedidoData);
 
             try {
                 // Esperamos que cada envío a Google Sheets se complete antes de continuar
-                // La función de envío ahora maneja sus propios reintentos.
                 await enviarPedidoAGoogleSheets(
                     pedidoData.fecha,
                     pedidoData.nombre,
@@ -565,9 +379,9 @@
                     pedidoData.impreso
                 );
             } catch (error) {
-                // Este catch solo se activará si todos los reintentos dentro
-                // de enviarPedidoAGoogleSheets fallan.
-                console.error(`ERROR FATAL: El pedido para "${pedidoData.producto}" no pudo ser enviado después de múltiples reintentos.`);
+                // Este catch solo se activará si todos los reintentos dentro de 
+                // enviarPedidoAGoogleSheets fallan para un producto específico.
+                console.error(`ERROR FATAL: El pedido para "${pedidoData.producto}" no pudo ser enviado a Google Sheets después de múltiples reintentos.`);
                 hayErroresDeEnvio = true;
             }
 
@@ -580,7 +394,7 @@
 
         localStorage.setItem("pedidos", JSON.stringify(pedidosEnLocalStorage));
 
-        // Generar PDF automáticamente
+        // Generar PDF automáticamente después de intentar enviar todo
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         doc.setFontSize(14);
@@ -595,57 +409,38 @@
 
         doc.save(`Pedido_${nombre}_${fecha.replace(/[/: ]/g, '_')}.pdf`);
 
-        // Mensaje final al usuario
+        // Mensaje final al usuario en el modal y manejo del cierre
         if (hayErroresDeEnvio) {
-            alert("¡Proceso de envío completado con ALGUNOS ERRORES! No todos los pedidos pudieron ser registrados en Google Sheets después de varios reintentos. Por favor, revisa la consola del navegador y los logs de Google Apps Script.");
-            if (mensajeEstadoModal) {
-                mensajeEstadoModal.textContent = 'Hubo errores al enviar algunos pedidos. Revisa la consola.';
-                mensajeEstadoModal.classList.add('error');
-            }
-            // Si hubo errores, re-habilitamos el botón para que el usuario pueda intentar de nuevo
-            if (btnEnviarPedidoModal) {
-                btnEnviarPedidoModal.disabled = false;
-                btnEnviarPedidoModal.textContent = 'Enviar Pedido';
-            }
+            modalStatusMessage.textContent = "¡Proceso de envío completado con ALGUNOS ERRORES! Algunos ítems no pudieron ser registrados en Google Sheets. Por favor, revisa la consola del navegador y los logs de Google Apps Script.";
+            modalStatusMessage.className = 'message-container error-message';
+            // El botón se re-habilita automáticamente en el `finally` si el error fue de la promesa de fetch.
+            // Si el modal debe quedarse abierto en caso de error, no llamamos a `cerrarModal()`.
+            btnEnviarModal.textContent = 'Reintentar Envío'; // Permite reintentar si el usuario quiere
+            btnEnviarModal.disabled = false; // Re-habilitar el botón para permitir reintentar
         } else {
-            alert("¡Proceso de envío de pedidos completado exitosamente! Todos los pedidos fueron registrados en Google Sheets.");
-            if (mensajeEstadoModal) {
-                mensajeEstadoModal.textContent = '¡Pedido enviado con éxito!';
-                mensajeEstadoModal.classList.add('success');
-            }
-            // Si todo fue exitoso, el botón puede permanecer deshabilitado o cerrarse el modal.
-            // Aquí elegimos cerrar el modal.
+            modalStatusMessage.textContent = "¡Pedido enviado correctamente! Todos los ítems fueron registrados en Google Sheets.";
+            modalStatusMessage.className = 'message-container success-message';
+            // Si todo salió bien, cerramos el modal después de un breve retraso para que el usuario lea el mensaje
+            setTimeout(() => {
+                cerrarModal();
+                // Limpiar el formulario principal después del envío exitoso y cierre del modal
+                pedidoForm.reset();
+                productosContainer.innerHTML = ""; // Limpiar productos agregados
+                actualizarEstado(); // Actualizar el estado de la impresión
+            }, 1500); // Retraso de 1.5 segundos
         }
-
-        // Limpieza visual
-        document.getElementById("pedidoForm").reset();
-        document.getElementById("productosContainer").innerHTML = "";
-        actualizarEstado();
-
-        // Cierra el modal después de que el proceso termina y se muestra el mensaje final.
-        // Si hay un mensaje de error, es posible que quieras dejar el modal abierto por un tiempo
-        // para que el usuario vea el error, o solo cerrarlo si fue exitoso.
-        // Para este ejemplo, lo cerraremos de todas formas después del alert.
-        cerrarModal();
     }
 
     function cerrarModal() {
-        document.getElementById("modalConfirmacion").style.display = "none";
-        // Restablece el estado inicial del botón del modal al cerrar
-        if (btnEnviarPedidoModal) {
-            btnEnviarPedidoModal.disabled = false;
-            btnEnviarPedidoModal.textContent = 'Enviar Pedido';
-        }
-        const mensajeEstadoModal = document.getElementById('mensajeEstadoModal');
-        if (mensajeEstadoModal) {
-            mensajeEstadoModal.textContent = '';
-            mensajeEstadoModal.className = 'modal-message';
-        }
+        modalConfirmacion.style.display = "none";
     }
 
     // --- FUNCION ANULAR PEDIDO con reintentos ---
     async function anularPedido() {
-        let nombre = document.getElementById("nombre").value;
+        // Deshabilitar el botón de Anular Pedido si es necesario (no hay modal aquí directamente)
+        // Podrías mostrar un mensaje de "Anulando..." en el formulario principal.
+        
+        let nombre = nombreClienteInput.value;
         let productos = document.querySelectorAll(".producto");
         let cantidades = document.querySelectorAll(".cantidad");
         let observaciones = document.querySelectorAll(".observacion");
@@ -659,21 +454,14 @@
         let pedidosEnLocalStorage = JSON.parse(localStorage.getItem("pedidos")) || [];
         let hayErroresDeAnulacion = false;
 
-        // Deshabilitar botones de anular y confirmar durante el proceso
-        document.querySelector('button[onclick="confirmarPedido()"]').disabled = true;
-        document.querySelector('button[onclick="anularPedido()"]').disabled = true;
-        document.querySelector('button[onclick="confirmarPedido()"]').textContent = 'Procesando...';
-        document.querySelector('button[onclick="anularPedido()"]').textContent = 'Procesando...';
-
-
-        for (let i = 0; i < productos.length; i++) {
-            let cantidadNegativa = -parseInt(cantidades[i].value);
+        for (let i = 0; i < products.length; i++) {
+            let cantidadNegativa = -parseInt(quantities[i].value); 
             const pedidoAnuladoData = {
                 fecha,
                 nombre,
-                producto: productos[i].value,
+                producto: products[i].value,
                 cantidad: cantidadNegativa,
-                observacion: observaciones[i].value,
+                observacion: observations[i].value,
                 impreso: "No"
             };
 
@@ -693,7 +481,7 @@
                 hayErroresDeAnulacion = true;
             }
         }
-
+        
         localStorage.setItem("pedidos", JSON.stringify(pedidosEnLocalStorage));
 
         if (hayErroresDeAnulacion) {
@@ -702,24 +490,18 @@
             alert("¡Pedido anulado correctamente! Todas las anulaciones fueron registradas en Google Sheets.");
         }
 
-        document.getElementById("pedidoForm").reset();
-        document.getElementById("productosContainer").innerHTML = "";
-        actualizarEstado();
-        cerrarModal(); // Asegúrate de cerrar el modal si está abierto
-
-        // Re-habilitar botones
-        document.querySelector('button[onclick="confirmarPedido()"]').disabled = false;
-        document.querySelector('button[onclick="anularPedido()"]').disabled = false;
-        document.querySelector('button[onclick="confirmarPedido()"]').textContent = '✔️ Confirmar Pedido';
-        document.querySelector('button[onclick="anularPedido()"]').textContent = '❌ Anular Pedido';
+        pedidoForm.reset();
+        productosContainer.innerHTML = ""; // Limpiar productos agregados
+        actualizarEstado(); 
+        // No hay modal de anulación, así que no se llama a cerrarModal aquí directamente.
     }
 
-
+    // --- Funciones de administración y reportes (sin cambios principales) ---
     function descargarPDFPedido() {
-        let nombre = document.getElementById("nombre").value;
-        let productos = document.querySelectorAll(".producto");
-        let cantidades = document.querySelectorAll(".cantidad");
-        let observaciones = document.querySelectorAll(".observacion");
+        let nombre = nombreClienteInput.value;
+        let products = document.querySelectorAll(".producto");
+        let quantities = document.querySelectorAll(".cantidad");
+        let observations = document.querySelectorAll(".observacion");
 
         if (!nombre || products.length === 0) {
             alert("Debes completar un pedido antes de generar el PDF.");
@@ -736,11 +518,11 @@
 
         let rows = [];
 
-        productos.forEach((producto, index) => {
+        products.forEach((product, index) => {
             rows.push([
-                producto.value,
-                cantidades[index].value,
-                observaciones[index].value || "Sin observaciones"
+                product.value,
+                quantities[index].value,
+                observations[index].value || "Sin observaciones"
             ]);
         });
 
@@ -752,24 +534,24 @@
 
         doc.save(`Pedido_${nombre}_${fecha.replace(/[/: ]/g, '_')}.pdf`);
     }
-
+    
     function accederAdmin() {
         let clave = prompt("Ingrese la clave de administrador:");
         if (clave === "admin123") {
             document.getElementById("adminPanel").style.display = "block";
             mostrarPedidos();
-            actualizarEstado();
+            actualizarEstado();  
         } else {
             alert("Clave incorrecta.");
         }
     }
-
+    
     function solicitarClaveParaImpresion() {
-        const claveCorrecta = "admin123";
+        const claveCorrecta = "admin123"; 
         const claveIngresada = prompt("Ingrese la clave para imprimir:");
 
         if (claveIngresada === claveCorrecta) {
-            generarPDF();
+            generarPDF(); 
         } else {
             alert("Clave incorrecta. No se puede imprimir.");
         }
@@ -777,9 +559,9 @@
 
     function eliminarTodosLosPedidos() {
         if (confirm("¿Estás seguro de que quieres eliminar todos los pedidos? Esta acción no se puede deshacer.")) {
-            localStorage.removeItem("pedidos");
-            mostrarPedidos();
-            actualizarEstado();
+            localStorage.removeItem("pedidos"); 
+            mostrarPedidos(); 
+            actualizarEstado(); 
             alert("Todos los pedidos han sido eliminados.");
         }
     }
@@ -787,10 +569,9 @@
     function mostrarPedidos() {
         let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
 
-        // Limita a los últimos 200 pedidos para evitar problemas de rendimiento
         if (pedidos.length > 200) {
-            pedidos = pedidos.slice(-200);
-            localStorage.setItem("pedidos", JSON.stringify(pedidos));
+            pedidos = pedidos.slice(-200); 
+            localStorage.setItem("pedidos", JSON.stringify(pedidos)); 
         }
 
         let tbody = document.querySelector("#tablaPedidos tbody");
@@ -801,36 +582,31 @@
                 <td>${p.nombre}</td>
                 <td>${p.producto}</td>
                 <td>${p.cantidad}</td>
-                <td>${p.observacion || "N/A"}</td>
+                <td>${p.observacion}</td>
                 <td>${p.impreso}</td>
                 <td><button onclick="eliminarPedido(${index})">❌</button></td>
             </tr>`;
             tbody.innerHTML += fila;
         });
     }
-
-    // Se cambió a DOMContentLoaded para asegurar que el DOM esté completamente cargado
-    // antes de intentar obtener elementos o manipularlos.
-    // Esto es más robusto que window.onload para scripts que pueden ejecutarse antes.
-    // document.addEventListener('DOMContentLoaded', (event) => {
-    //     actualizarEstado();
-    // });
-
-
+    
     function eliminarPedido(index) {
         let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-        pedidos.splice(index, 1);
+        pedidos.splice(index, 1); 
         localStorage.setItem("pedidos", JSON.stringify(pedidos));
-        mostrarPedidos();
-        actualizarEstado();
+        mostrarPedidos(); 
+        actualizarEstado(); 
     }
 
+    window.onload = function() {
+        actualizarEstado(); 
+    };
 
     function generarPDF() {
         const { jsPDF } = window.jspdf;
         let doc = new jsPDF({ orientation: "landscape" });
         let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-
+        
         let pedidosNoImpresos = pedidos.filter(p => p.impreso === "No");
 
         if (pedidosNoImpresos.length === 0) {
@@ -842,7 +618,7 @@
 
         doc.setFontSize(14);
         doc.text(`Pedidos - Cuadro de Doble Entrada`, 14, 15);
-        doc.text(`Fecha: ${fechaActual}`, 240, 15);
+        doc.text(`Fecha: ${fechaActual}`, 240, 15); 
 
         let clientesUnicos = [...new Set(pedidosNoImpresos.map(p => p.nombre))];
         let productosUnicos = [...new Set(pedidosNoImpresos.map(p => p.producto))];
@@ -867,7 +643,7 @@
 
         let observacionesAgrupadas = {};
         pedidosNoImpresos.forEach(p => {
-            if (p.observacion && p.observacion.trim()) { // Asegura que la observación no esté vacía
+            if (p.observacion && p.observacion.trim()) { // Asegurarse de que la observación no esté vacía
                 if (!observacionesAgrupadas[p.nombre]) {
                     observacionesAgrupadas[p.nombre] = [];
                 }
@@ -878,38 +654,31 @@
         if (Object.keys(observacionesAgrupadas).length > 0) {
             Object.entries(observacionesAgrupadas).forEach(([cliente, observaciones]) => {
                 doc.setFontSize(12);
-                doc.text(`${cliente}: ${observaciones.join("; ")}`, 14, startY);
-                startY += 6;
+                // Si la línea es muy larga, autoTable puede no manejarla bien, pero para observaciones cortas funciona.
+                doc.text(`${cliente}: ${observaciones.join("; ")}`, 14, startY, { maxWidth: 260, align: 'left' }); // Añadir maxWidth para evitar desbordamiento
+                startY += Math.ceil(doc.getStringUnitWidth(`${cliente}: ${observaciones.join("; ")}`) * 12 / 260) * 4; // Ajuste de Y para líneas largas
             });
         } else {
-            doc.setFontSize(12);
             doc.text("No hay observaciones.", 14, startY);
-            startY += 6;
         }
 
-
         pedidos.forEach(p => {
-            // Marcar como impreso solo si el pedido completo coincide con uno de los no impresos que se incluyeron en este PDF
-            // Esto es crucial para evitar marcar pedidos que no se incluyeron en la impresión actual.
-            const isIncludedAndNotYetPrinted = pedidosNoImpresos.some(noImp =>
-                noImp.fecha === p.fecha &&
-                noImp.nombre === p.nombre &&
-                noImp.producto === p.producto &&
-                noImp.cantidad === p.cantidad &&
-                noImp.observacion === p.observacion &&
-                p.impreso === "No" // Solo marca si aún no está impreso
-            );
-            if (isIncludedAndNotYetPrinted) {
+            // Marcar como "Sí" solo los pedidos que estaban en pedidosNoImpresos y han sido incluidos en el PDF
+            if (pedidosNoImpresos.some(noImp => 
+                noImp.fecha === p.fecha && 
+                noImp.nombre === p.nombre && 
+                noImp.producto === p.producto && 
+                noImp.cantidad === p.cantidad && 
+                noImp.observacion === p.observacion)) {
                 p.impreso = "Sí";
             }
         });
-
 
         localStorage.setItem("pedidos", JSON.stringify(pedidos));
 
         actualizarEstado();
 
-        doc.save(`Pedidos_No_Impresos_${fechaActual}.pdf`);
+        doc.save(`Pedidos_${fechaActual}.pdf`);
     }
 
     function actualizarEstado() {
@@ -917,7 +686,7 @@
         const hayPendientes = pedidos.some(p => p.impreso === "No");
 
         const estadoForm = document.getElementById("estadoImpresion");
-        const estadoAdmin = document.getElementById("estadoImpresionAdmin");
+        const estadoAdmin = document.getElementById("estadoImpresionAdmin"); 
         const cartel = document.getElementById("nuevoPedido");
 
         if (hayPendientes) {
@@ -929,9 +698,8 @@
             if (estadoAdmin) estadoAdmin.style.backgroundColor = "blue";
             if (cartel) cartel.style.display = "none";
         }
-        mostrarPedidos(); // Asegúrate de refrescar la tabla de pedidos
     }
-
+    
     function generarPDFCompleto() {
         const { jsPDF } = window.jspdf;
         let doc = new jsPDF({ orientation: "landscape" });
@@ -979,15 +747,11 @@
         if (Object.keys(observacionesAgrupadas).length > 0) {
             Object.entries(observacionesAgrupadas).forEach(([cliente, observaciones]) => {
                 doc.setFontSize(12);
-                doc.text(`${cliente}: ${observaciones.join("; ")}`, 14, startY);
-                startY += 6;
+                doc.text(`${cliente}: ${observaciones.join("; ")}`, 14, startY, { maxWidth: 260, align: 'left' });
+                startY += Math.ceil(doc.getStringUnitWidth(`${cliente}: ${observaciones.join("; ")}`) * 12 / 260) * 4;
             });
-        } else {
-            doc.setFontSize(12);
-            doc.text("No hay observaciones.", 14, startY);
-            startY += 6;
         }
-
+        
         doc.save("Pedidos_Completos.pdf");
     }
 
@@ -1002,9 +766,11 @@
 </script>
 <div id="modalConfirmacion" class="modal">
     <div class="modal-content">
+        <span class="close-button" onclick="cerrarModal()">&times;</span>
         <h3>Resumen del Pedido</h3>
         <div id="resumenPedido"></div>
-        <div id="mensajeEstadoModal" class="modal-message"></div> <button id="btnEnviarPedidoModal" onclick="enviarPedido()">Enviar Pedido</button>
+        <p id="modalStatusMessage" style="margin-top: 15px; font-weight: bold;"></p>
+        <button id="btnEnviarModal" onclick="enviarPedido()">Enviar Pedido</button>
         <button onclick="cerrarModal()">Cancelar</button>
     </div>
 </div>
