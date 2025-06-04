@@ -271,103 +271,111 @@
         }
     }
 
-    // --- FUNCION PRINCIPAL DE ENVIO DE PEDIDOS ---
-    async function enviarPedido() {
-        const boton = document.getElementById("btnEnviar");
-        boton.disabled = true; // 🔒 Desactiva el botón para prevenir reenvíos
-        let nombre = document.getElementById("nombre").value;
-        let productos = document.querySelectorAll(".producto");
-        let cantidades = document.querySelectorAll(".cantidad");
-        let observaciones = document.querySelectorAll(".observacion");
+   // --- FUNCION PRINCIPAL DE ENVIO DE PEDIDOS ---
+async function enviarPedido() {
+    const botonEnviar = document.getElementById("btnEnviar");
+    const botonCancelar = document.getElementById("btnCancelar");
+    const textoOriginalEnviar = botonEnviar.innerText;
 
-        if (!nombre || productos.length === 0) {
-            alert("Debes ingresar un nombre y al menos un producto.");
-            return;
-        }
+    botonEnviar.disabled = true;
+    botonCancelar.disabled = true;
+    botonEnviar.innerText = "Enviando...";
 
-        let pedidosEnLocalStorage = JSON.parse(localStorage.getItem("pedidos")) || [];
-        let fecha = obtenerFechaFormateada();
+    let nombre = document.getElementById("nombre").value;
+    let productos = document.querySelectorAll(".producto");
+    let cantidades = document.querySelectorAll(".cantidad");
+    let observaciones = document.querySelectorAll(".observacion");
 
-        let rowsParaPdf = []; 
-        let hayErroresDeEnvio = false; // Bandera para saber si hubo algún fallo
-
-        // Recorremos los productos usando un bucle for...of para poder usar await
-        for (let i = 0; i < productos.length; i++) {
-            let productoVal = productos[i].value;
-            let cantidadVal = parseInt(cantidades[i].value);
-            let observacionVal = observaciones[i].value;
-
-            const pedidoData = {
-                fecha,
-                nombre,
-                producto: productoVal,
-                cantidad: cantidadVal,
-                observacion: observacionVal,
-                impreso: "No"
-            };
-
-            // Guarda en localStorage *inmediatamente* (es local y rápido)
-            pedidosEnLocalStorage.push(pedidoData);
-
-            try {
-                // Esperamos que cada envío a Google Sheets se complete antes de continuar
-                // La función de envío ahora maneja sus propios reintentos.
-                await enviarPedidoAGoogleSheets(
-                    pedidoData.fecha,
-                    pedidoData.nombre,
-                    pedidoData.producto,
-                    pedidoData.cantidad,
-                    pedidoData.observacion,
-                    pedidoData.impreso
-                );
-            } catch (error) {
-                // Este catch solo se activará si todos los reintentos dentro de 
-                // enviarPedidoAGoogleSheets fallan.
-                console.error(`ERROR FATAL: El pedido para "${pedidoData.producto}" no pudo ser enviado después de múltiples reintentos.`);
-                hayErroresDeEnvio = true;
-            }
-
-            rowsParaPdf.push([
-                productoVal,
-                cantidadVal,
-                observacionVal || "Sin observaciones"
-            ]);
-        }
-
-        localStorage.setItem("pedidos", JSON.stringify(pedidosEnLocalStorage));
-
-        // Generar PDF automáticamente
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        doc.setFontSize(14);
-        doc.text(`Pedido de: ${nombre}`, 10, 10);
-        doc.text(`Fecha: ${fecha}`, 10, 20);
-
-        doc.autoTable({
-            startY: 30,
-            head: [['Producto', 'Cantidad', 'Observaciones']],
-            body: rowsParaPdf,
-        });
-
-        doc.save(`Pedido_${nombre}_${fecha.replace(/[/: ]/g, '_')}.pdf`);
-
-        // Mensaje final al usuario
-        if (hayErroresDeEnvio) {
-            alert("¡Proceso de envío completado con ALGUNOS ERRORES! No todos los pedidos pudieron ser registrados en Google Sheets después de varios reintentos. Por favor, revisa la consola del navegador y los logs de Google Apps Script.");
-        } else {
-            alert("¡Proceso de envío de pedidos completado exitosamente! Todos los pedidos fueron registrados en Google Sheets.");
-        }
-        
-        // Limpieza visual
-        document.getElementById("pedidoForm").reset();
-        document.getElementById("productosContainer").innerHTML = "";
-        actualizarEstado(); 
-        cerrarModal();
+    if (!nombre || productos.length === 0) {
+        alert("Debes ingresar un nombre y al menos un producto.");
+        botonEnviar.disabled = false;
+        botonCancelar.disabled = false;
+        botonEnviar.innerText = textoOriginalEnviar;
+        return;
     }
 
-    function cerrarModal() {
-        document.getElementById("modalConfirmacion").style.display = "none";
+    let pedidosEnLocalStorage = JSON.parse(localStorage.getItem("pedidos")) || [];
+    let fecha = obtenerFechaFormateada();
+
+    let rowsParaPdf = []; 
+    let hayErroresDeEnvio = false;
+
+    for (let i = 0; i < productos.length; i++) {
+        let productoVal = productos[i].value;
+        let cantidadVal = parseInt(cantidades[i].value);
+        let observacionVal = observaciones[i].value;
+
+        const pedidoData = {
+            fecha,
+            nombre,
+            producto: productoVal,
+            cantidad: cantidadVal,
+            observacion: observacionVal,
+            impreso: "No"
+        };
+
+        pedidosEnLocalStorage.push(pedidoData);
+
+        try {
+            await enviarPedidoAGoogleSheets(
+                pedidoData.fecha,
+                pedidoData.nombre,
+                pedidoData.producto,
+                pedidoData.cantidad,
+                pedidoData.observacion,
+                pedidoData.impreso
+            );
+        } catch (error) {
+            console.error(`ERROR FATAL: El pedido para "${pedidoData.producto}" no pudo ser enviado después de múltiples reintentos.`);
+            hayErroresDeEnvio = true;
+        }
+
+        rowsParaPdf.push([
+            productoVal,
+            cantidadVal,
+            observacionVal || "Sin observaciones"
+        ]);
     }
+
+    localStorage.setItem("pedidos", JSON.stringify(pedidosEnLocalStorage));
+
+    // Generar PDF automáticamente
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFontSize(14);
+    doc.text(`Pedido de: ${nombre}`, 10, 10);
+    doc.text(`Fecha: ${fecha}`, 10, 20);
+
+    doc.autoTable({
+        startY: 30,
+        head: [['Producto', 'Cantidad', 'Observaciones']],
+        body: rowsParaPdf,
+    });
+
+    doc.save(`Pedido_${nombre}_${fecha.replace(/[/: ]/g, '_')}.pdf`);
+
+    // Mensaje final
+    if (hayErroresDeEnvio) {
+        alert("¡Proceso de envío completado con ALGUNOS ERRORES! No todos los pedidos pudieron ser registrados en Google Sheets después de varios reintentos. Por favor, revisa la consola del navegador y los logs de Google Apps Script.");
+    } else {
+        alert("¡Proceso de envío de pedidos completado exitosamente! Todos los pedidos fueron registrados en Google Sheets.");
+    }
+
+    // Limpieza visual
+    document.getElementById("pedidoForm").reset();
+    document.getElementById("productosContainer").innerHTML = "";
+    actualizarEstado(); 
+    cerrarModal();
+
+    // 🔓 Reactiva botones y restaura texto
+    botonEnviar.disabled = false;
+    botonCancelar.disabled = false;
+    botonEnviar.innerText = textoOriginalEnviar;
+}
+
+function cerrarModal() {
+    document.getElementById("modalConfirmacion").style.display = "none";
+}
 
     // --- FUNCION ANULAR PEDIDO con reintentos ---
     async function anularPedido() {
@@ -692,7 +700,7 @@
         <h3>Resumen del Pedido</h3>
         <div id="resumenPedido"></div>
         <button id="btnEnviar" onclick="enviarPedido()">Enviar Pedido</button>
-        <button onclick="cerrarModal()">Cancelar</button>
+        <button id="btnCancelar" onclick="cancelarPedido()">Cancelar</button>
     </div>
 </div>
 
