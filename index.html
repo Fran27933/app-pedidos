@@ -1,12 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedidos de Clientes</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
         .producto-item {
             display: flex;
@@ -30,635 +24,635 @@
         }
         
         .modal { 
-            display: none; 
-            position: fixed; 
-            left: 0; 
-            top: 0; 
-            width: 100%; 
-            height: 100%; 
-            background-color: rgba(0, 0, 0, 0.5); 
-            justify-content: center; 
-            align-items: center; 
-        }
-        .modal-content { 
-            background: white; 
-            padding: 20px; 
-            border-radius: 10px; 
-            text-align: center; 
-        }
+    display: none; 
+    position: fixed; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0, 0, 0, 0.5); 
+    justify-content: center; 
+    align-items: center; 
+}
+.modal-content { 
+    background: white; 
+    padding: 20px; 
+    border-radius: 10px; 
+    text-align: center; 
+}
 
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
+  html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
 
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start; /* usa center si quieres que todo quede verticalmente al medio */
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* usa center si quieres que todo quede verticalmente al medio */
+  background-color: #f4f4f4;
+  padding: 20px;
+}
 
-        form {
-            width: 100%;
-            max-width: 600px; /* Ajusta según tu diseño */
-        }
+form {
+  width: 100%;
+  max-width: 600px; /* Ajusta según tu diseño */
+}
 
-        #productosContainer {
-            width: 100%;
-        }
+#productosContainer {
+  width: 100%;
+}
 
-        .producto-item {
-            flex-direction: column; /* para que se vea ordenado en móviles */
-            align-items: flex-start;
-            width: 100%;
-        }     
+.producto-item {
+  flex-direction: column; /* para que se vea ordenado en móviles */
+  align-items: flex-start;
+  width: 100%;
+}      
 
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; }
-        form, .admin-panel { background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px #aaa; display: inline-block; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid black; padding: 10px; text-align: center; }
-        th { background-color: #007bff; color: white; }
-        button { background-color: #007bff; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; }
-        button:hover { background-color: #0056b3; }
-        .admin-panel { display: none; margin-top: 20px; }
     </style>
 </head>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedidos de Clientes</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; }
+    form, .admin-panel { background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px #aaa; display: inline-block; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid black; padding: 10px; text-align: center; }
+    th { background-color: #007bff; color: white; }
+    button { background-color: #007bff; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; }
+    button:hover { background-color: #0056b3; }
+    .admin-panel { display: none; margin-top: 20px; }
+  </style>
+</head>
 <body>
+<!-- Estado de impresión -->
 <div id="estadoImpresion" style="width: 16px; height: 16px; border-radius: 50%; background-color: blue; margin-bottom: 10px;"></div>
 
 <h2>Formulario de Pedido</h2>
 <form id="pedidoForm">
-    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
-        <div>
-            <label for="codigoCliente">Código Cliente:</label><br>
-            <input type="text" id="codigoCliente" maxlength="5" minlength="5"
-                   oninput="cargarNombreCliente()" autocomplete="off" required pattern=".{5}">
-        </div>
-
-        <div>
-            <label for="nombre">Nombre:</label><br>
-            <input type="text" id="nombre" required readonly>
-        </div>
+  <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+    <div>
+      <label for="codigoCliente">Código Cliente:</label><br>
+      <input type="text" id="codigoCliente" maxlength="5" minlength="5"
+             oninput="cargarNombreCliente()" autocomplete="off" required pattern=".{5}">
     </div>
 
-    <br>
-    <h3>Productos</h3>
-    <div id="productosContainer"></div>
-    <button type="button" onclick="agregarProducto()">➕ Agregar Producto</button><br><br>
-    <button type="button" onclick="confirmarPedido()">✔️Confirmar Pedido</button>
-    <button type="button" onclick="anularPedido()">❌Anular Pedido</button>   
+    <div>
+      <label for="nombre">Nombre:</label><br>
+      <input type="text" id="nombre" required readonly>
+    </div>
+  </div>
+
+  <br>
+  <h3>Productos</h3>
+  <div id="productosContainer"></div>
+  <button type="button" onclick="agregarProducto()">➕ Agregar Producto</button><br><br>
+  <button type="button" onclick="confirmarPedido()">✔️Confirmar Pedido</button>
+  <button type="button" onclick="anularPedido()">❌Anular Pedido</button>  
 </form>
 
-    <div id="adminPanel" class="admin-panel">
-        <h2>Lista de Pedidos</h2>
-    <div style="display: flex; align-items: center; margin-bottom: 10px;">
-    <div id="estadoImpresion" style="width: 20px; height: 20px; border-radius: 50%; background-color: blue; margin-right: 10px;"></div>
-    <div id="nuevoPedido" style="display: none; background-color: yellow; padding: 5px 10px; border-radius: 5px; font-weight: bold;">Nuevo Pedido</div>
+  <div id="adminPanel" class="admin-panel">
+    <h2>Lista de Pedidos</h2>
+  <div style="display: flex; align-items: center; margin-bottom: 10px;">
+  <div id="estadoImpresion" style="width: 20px; height: 20px; border-radius: 50%; background-color: blue; margin-right: 10px;"></div>
+  <div id="nuevoPedido" style="display: none; background-color: yellow; padding: 5px 10px; border-radius: 5px; font-weight: bold;">Nuevo Pedido</div>
 </div>
-        <table id="tablaPedidos">
-            <thead>
-                <tr>
-                    <td>Fecha</td> <th>Cliente</th>
-                    <th>Producto</th>
-                    <th>Cantidad</th>
-                    <th>Observaciones</th>
-                    <th>Impreso</th>
-                    <th>Eliminar</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <button onclick="generarPDF()">📄 Imprimir Pedidos</button>
-        <button onclick="descargarExcel()">📥 Descargar Excel</button>
-        <button onclick="eliminarTodosLosPedidos()">🗑 Eliminar Todos</button>
-        <button onclick="generarPDFCompleto()">Generar PDF Completo</button>
-    </div>
-    <button onclick="accederAdmin()">🔑 Acceder como Administrador</button>
-    <button type="button" onclick="solicitarClaveParaImpresion()">🖨 Imprimir PDF</button>
+    <table id="tablaPedidos">
+      <thead>
+        <tr>
+          <td>${obtenerFechaFormateadaDesdeTexto(pedido.fecha)}</td>
+          <th>Cliente</th>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Observaciones</th>
+          <th>Impreso</th>
+          <th>Eliminar</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button onclick="generarPDF()">📄 Imprimir Pedidos</button>
+    <button onclick="descargarExcel()">📥 Descargar Excel</button>
+    <button onclick="eliminarTodosLosPedidos()">🗑 Eliminar Todos</button>
+    <button onclick="generarPDFCompleto()">Generar PDF Completo</button>
+  </div>
+  <button onclick="accederAdmin()">🔑 Acceder como Administrador</button>
+  <button type="button" onclick="solicitarClaveParaImpresion()">🖨 Imprimir PDF</button> <!-- Nuevo botón -->
 
-    <script>
-        let clientes = {
-            "GEN89": "GENERACIÓN", "BIT60": "BITFARMS", "ING48": "INGESA", "IPM57": "IPM", "CIS47": "CISAR",
-            "VER61": "VERO", "SEN48": "SENASA", "SOL61": "SOLARO", "HYD61": "HYDROBOT", "GOD78": "GODOY CRUZ", "SAL10": "SALTO"
-        };
-        
-        let productosDisponibles = [
-            "PRINCIPAL", "OPCIONAL", "ENSALADA 1", "ENSALADA 2", "ENSALADA 3", "ENSALADA 4",
-            "ENSALADA 5", "ENSALADA 6", "ENSALADA 7", "ENSALADA 8", "ENSALADA 9", "ENSALADA 10",
-            "ENSALADA 11", "ENSALADA 12", "ENSALADA 13", "ENSALADA 14", "ENSALADA 15", "ENSALADA 19", 
-            "ENSALADA 20", "ENSALADA 21", "ENSALADA COMUN", "BIFE DE TERNERA", "BIFE DE POLLO", 
-            "PATA MUSLO AL HORNO", "LOMO DE ATUN", "MILANESA DE POLLO", "MILANESA DE TERNERA", 
-            "TARTA DE JyQ", "TARTA DE ATUN", "TARTA DE POLLO", "OMELETTE", "PURE", "PURE MIXTO", "PAPA FRITA", 
-            "ARROZ", "VERDURA AL HORNO", "REFRIGERIO", "OTROS", "GASESOSA"
-        ];
+  <script>
+       let clientes = {
+        "GEN89": "GENERACIÓN", "BIT60": "BITFARMS", "ING48": "INGESA", "IPM57": "IPM", "CIS47": "CISAR",
+        "VER61": "VERO", "SEN48": "SENASA", "SOL61": "SOLARO", "HYD61": "HYDROBOT", "GOD78": "GODOY CRUZ", "SAL10": "SALTO"
+    };
+    
+    let productosDisponibles = [
+        "PRINCIPAL", "OPCIONAL", "ENSALADA 1", "ENSALADA 2", "ENSALADA 3", "ENSALADA 4",
+        "ENSALADA 5", "ENSALADA 6", "ENSALADA 7", "ENSALADA 8", "ENSALADA 9", "ENSALADA 10",
+        "ENSALADA 11", "ENSALADA 12", "ENSALADA 13", "ENSALADA 14", "ENSALADA 15", "ENSALADA 19", 
+        "ENSALADA 20", "ENSALADA 21", "ENSALADA COMUN", "BIFE DE TERNERA", "BIFE DE POLLO", 
+        "PATA MUSLO AL HORNO", "LOMO DE ATUN", "MILANESA DE POLLO", "MILANESA DE TERNERA", 
+        "TARTA DE JyQ", "TARTA DE ATUN", "TARTA DE POLLO", "OMELETTE", "PURE", "PURE MIXTO", "PAPA FRITA", 
+        "ARROZ", "VERDURA AL HORNO", "REFRIGERIO", "OTROS", "GASESOSA"
+    ]
 
-        function cargarNombreCliente() {
-            let codigo = document.getElementById("codigoCliente").value.toUpperCase();
-            document.getElementById("codigoCliente").value = codigo; // opcional: muestra el código en mayúsculas en el input
-            document.getElementById("nombre").value = clientes[codigo] || "";
+    function cargarNombreCliente() {
+  let codigo = document.getElementById("codigoCliente").value.toUpperCase();
+  document.getElementById("codigoCliente").value = codigo; // opcional: muestra el código en mayúsculas en el input
+  document.getElementById("nombre").value = clientes[codigo] || "";
+}
+
+  function agregarProducto() {
+    let container = document.getElementById("productosContainer");
+    let div = document.createElement("div");
+    div.className = "producto-item";
+
+    let opcionesProductos = productosDisponibles.map(p => `<option value="${p}">${p}</option>`).join("");
+
+    div.innerHTML = `
+        <label>Producto: 
+            <select class="producto">${opcionesProductos}</select>
+        </label>
+        <label>Cantidad: 
+            <input type="number" class="cantidad" min="1" required style="width: 60px;" value="1">
+        </label>
+        <label>Observación: 
+            <textarea class="observacion" rows="4" style="width: 300px; height: 40px;" placeholder="Escribe aquí..."></textarea>
+        </label>
+        <button type="button" class="eliminar-producto" onclick="this.parentNode.remove()">❌</button>
+        <br>
+    `;
+
+    container.appendChild(div);
+}
+
+    function confirmarPedido() {
+    let nombre = document.getElementById("nombre").value;
+    let productos = document.querySelectorAll(".producto");
+    let cantidades = document.querySelectorAll(".cantidad");
+    let observaciones = document.querySelectorAll(".observacion");
+
+    if (!nombre || productos.length === 0) {
+        alert("Debe ingresar un nombre y al menos un producto.");
+        return;
+    }
+
+    let resumen = `<p><strong>Cliente:</strong> ${nombre}</p>`;
+    resumen += `<table border="1" style="width: 100%; text-align: center;">
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Observaciones</th>
+                    </tr>`;
+
+    productos.forEach((producto, index) => {
+        resumen += `<tr>
+                        <td>${producto.value}</td>
+                        <td>${cantidades[index].value}</td>
+                        <td>${observaciones[index].value || "Sin observaciones"}</td>
+                    </tr>`;
+    });
+
+    resumen += `</table>`;
+
+    document.getElementById("resumenPedido").innerHTML = resumen;
+    document.getElementById("modalConfirmacion").style.display = "flex";
+}
+
+   function obtenerFechaFormateada() {
+    const ahora = new Date();
+    const dia = String(ahora.getDate()).padStart(2, '0');
+    const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+    const anio = ahora.getFullYear();
+    const horas = String(ahora.getHours()).padStart(2, '0');
+    const minutos = String(ahora.getMinutes()).padStart(2, '0');
+    return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
+}
+
+function enviarPedido() {
+    let nombre = document.getElementById("nombre").value;
+    let productos = document.querySelectorAll(".producto");
+    let cantidades = document.querySelectorAll(".cantidad");
+    let observaciones = document.querySelectorAll(".observacion");
+
+    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+    let fecha = obtenerFechaFormateada(); // 👈 Fecha con formato fijo
+
+    let rows = []; // 👈 Para generar PDF
+
+    productos.forEach((producto, index) => {
+        let productoVal = producto.value;
+        let cantidadVal = parseInt(cantidades[index].value);
+        let observacionVal = observaciones[index].value;
+
+        // Guardar en localStorage
+        pedidos.push({
+            fecha,
+            nombre,
+            producto: productoVal,
+            cantidad: cantidadVal,
+            observacion: observacionVal,
+            impreso: "No"
+        });
+
+        // Enviar a Google Sheets
+        enviarPedidoAGoogleSheets(
+            fecha,
+            nombre,
+            productoVal,
+            cantidadVal,
+            observacionVal,
+            "No"
+        );
+
+        // Agregar fila para el PDF
+        rows.push([
+            productoVal,
+            cantidadVal,
+            observacionVal || "Sin observaciones"
+        ]);
+    });
+
+    // Guardar en localStorage
+    localStorage.setItem("pedidos", JSON.stringify(pedidos));
+
+    // ✅ Generar PDF automáticamente
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFontSize(14);
+    doc.text(`Pedido de: ${nombre}`, 10, 10);
+    doc.text(`Fecha: ${fecha}`, 10, 20);
+
+    doc.autoTable({
+        startY: 30,
+        head: [['Producto', 'Cantidad', 'Observaciones']],
+        body: rows,
+    });
+
+    doc.save(`Pedido_${nombre}_${fecha.replace(/[/: ]/g, '_')}.pdf`);
+
+    // Limpieza visual
+    alert("Pedido enviado correctamente");
+    document.getElementById("pedidoForm").reset();
+    document.getElementById("productosContainer").innerHTML = "";
+    actualizarEstado();
+    cerrarModal();
+
+    // Mostrar botón de descarga manual, si lo usás
+    document.getElementById("descargarPDF").style.display = "inline-block";
+}
+
+    function cerrarModal() {
+    document.getElementById("modalConfirmacion").style.display = "none";
+}
+
+     function enviarPedidoAGoogleSheets(fecha, cliente, producto, cantidad, observacion, impreso) {
+  var pedido = {
+    fecha: fecha,
+    cliente: cliente,
+    producto: producto,
+    cantidad: cantidad,
+    observacion: observacion,
+    impreso: impreso
+  };
+
+  fetch("https://script.google.com/macros/s/AKfycbzEOzjUzvrKH994MYlF_Rp_uSflvco6wvLDV9IN5hbi8u6ncBjEDv2QDhKU1jyRvNs/exec", {
+  method: 'POST',
+  mode: 'no-cors',
+  body: JSON.stringify(pedido),
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+  .then(response => response.text())
+  .then(data => {
+    console.log('Pedido guardado en Google Sheets:', data);
+  })
+  .catch(error => {
+    console.error('Error al guardar pedido:', error);
+  });
+}
+
+    function anularPedido() {
+  let nombre = document.getElementById("nombre").value;
+  let productos = document.querySelectorAll(".producto");
+  let cantidades = document.querySelectorAll(".cantidad");
+  let observaciones = document.querySelectorAll(".observacion");
+
+  if (!nombre || productos.length === 0) {
+    alert("Debe ingresar un nombre y al menos un producto.");
+    return;
+  }
+
+  // Crear un nuevo pedido con los productos en cantidad negativa
+  let fecha = obtenerFechaFormateada(); // Fecha con formato fijo
+  productos.forEach((producto, index) => {
+    let cantidadNegativa = -parseInt(cantidades[index].value); // La cantidad negativa
+    let pedidoAnulado = {
+      fecha,
+      nombre,
+      producto: producto.value,
+      cantidad: cantidadNegativa,
+      observacion: observaciones[index].value,
+      impreso: "No"
+    };
+
+    // Enviar el pedido anulado a Google Sheets
+    enviarPedidoAGoogleSheets(
+      fecha,
+      nombre,
+      producto.value,
+      cantidadNegativa,
+      observaciones[index].value,
+      "No"
+    );
+
+    // Guardar en localStorage
+    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+    pedidos.push(pedidoAnulado);
+    localStorage.setItem("pedidos", JSON.stringify(pedidos));
+  });
+
+  alert("Pedido anulado correctamente.");
+
+  // Limpiar el formulario
+  document.getElementById("pedidoForm").reset();
+  document.getElementById("productosContainer").innerHTML = "";
+  actualizarEstado(); // Actualizar estado de impresión si es necesario
+  cerrarModal(); // Cerrar modal de confirmación si está abierto
+}
+
+    function descargarPDFPedido() {
+    let nombre = document.getElementById("nombre").value;
+    let productos = document.querySelectorAll(".producto");
+    let cantidades = document.querySelectorAll(".cantidad");
+    let observaciones = document.querySelectorAll(".observacion");
+
+    if (!nombre || productos.length === 0) {
+        alert("Debe completar un pedido antes de generar el PDF.");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    let fecha = obtenerFechaFormateada();
+
+    doc.setFontSize(14);
+    doc.text(`Pedido de: ${nombre}`, 10, 10);
+    doc.text(`Fecha: ${fecha}`, 10, 20);
+
+    let rows = [];
+
+    productos.forEach((producto, index) => {
+        rows.push([
+            producto.value,
+            cantidades[index].value,
+            observaciones[index].value || "Sin observaciones"
+        ]);
+    });
+
+    doc.autoTable({
+        startY: 30,
+        head: [['Producto', 'Cantidad', 'Observaciones']],
+        body: rows,
+    });
+
+    doc.save(`Pedido_${nombre}_${fecha.replace(/[/: ]/g, '_')}.pdf`);
+}  
+  
+    function accederAdmin() {
+      let clave = prompt("Ingrese la clave de administrador:");
+      if (clave === "admin123") {
+        document.getElementById("adminPanel").style.display = "block";
+        mostrarPedidos();
+        actualizarEstado();  // Muestra el estado de los pedidos
+      } else {
+        alert("Clave incorrecta.");
+      }
+    }
+  
+    function solicitarClaveParaImpresion() {
+        const claveCorrecta = "admin123"; // Clave establecida
+        const claveIngresada = prompt("Ingrese la clave para imprimir:");
+
+        if (claveIngresada === claveCorrecta) {
+            generarPDF(); // Llamamos a la función de impresión
+        } else {
+            alert("Clave incorrecta. No se puede imprimir.");
         }
+    }
 
-        function agregarProducto() {
-            let container = document.getElementById("productosContainer");
-            let div = document.createElement("div");
-            div.className = "producto-item";
+    function eliminarTodosLosPedidos() {
+    if (confirm("¿Estás seguro de que quieres eliminar todos los pedidos? Esta acción no se puede deshacer.")) {
+        localStorage.removeItem("pedidos"); // Elimina todos los pedidos guardados
+        mostrarPedidos(); // Actualiza la tabla para reflejar el cambio
+        alert("Todos los pedidos han sido eliminados.");
+    }
+}
 
-            let opcionesProductos = productosDisponibles.map(p => `<option value="${p}">${p}</option>`).join("");
+  function mostrarPedidos() {
+  let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
 
-            div.innerHTML = `
-                <label>Producto: 
-                    <select class="producto">${opcionesProductos}</select>
-                </label>
-                <label>Cantidad: 
-                    <input type="number" class="cantidad" min="1" required style="width: 60px;" value="1">
-                </label>
-                <label>Observación: 
-                    <textarea class="observacion" rows="4" style="width: 300px; height: 40px;" placeholder="Escribe aquí..."></textarea>
-                </label>
-                <button type="button" class="eliminar-producto" onclick="this.parentNode.remove()">❌</button>
-                <br>
-            `;
+  // ✅ Quedarse solo con los últimos 60 pedidos
+  if (pedidos.length > 60) {
+    pedidos = pedidos.slice(-60); // conservar solo los últimos 60
+    localStorage.setItem("pedidos", JSON.stringify(pedidos)); // actualizar localStorage
+  }
 
-            container.appendChild(div);
-        }
+  let tbody = document.querySelector("#tablaPedidos tbody");
+  tbody.innerHTML = "";
+  pedidos.forEach((p, index) => {
+    let fila = `<tr>
+      <td>${p.fecha}</td>
+      <td>${p.nombre}</td>
+      <td>${p.producto}</td>
+      <td>${p.cantidad}</td>
+      <td>${p.observacion}</td>
+      <td>${p.impreso}</td>
+      <td><button onclick="eliminarPedido(${index})">❌</button></td>
+    </tr>`;
+    tbody.innerHTML += fila;
+  });
+}
+    
+    function eliminarPedido(index) {
+    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+    pedidos.splice(index, 1); // Elimina el pedido de la lista
+    localStorage.setItem("pedidos", JSON.stringify(pedidos));
+    mostrarPedidos(); // Actualiza la tabla
+}
 
-        function confirmarPedido() {
-            let nombre = document.getElementById("nombre").value;
-            let productos = document.querySelectorAll(".producto");
+window.onload = function() {
+    actualizarEstado(); // Llamar a la función para actualizar el estado al cargar la página
+};
 
-            if (!nombre || productos.length === 0) {
-                alert("Debe ingresar un nombre y al menos un producto.");
-                return;
+    function generarPDF() {
+    const { jsPDF } = window.jspdf;
+    let doc = new jsPDF({ orientation: "landscape" });
+    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+    
+    let pedidosNoImpresos = pedidos.filter(p => p.impreso === "No");
+
+    if (pedidosNoImpresos.length === 0) {
+        alert("No hay pedidos nuevos para imprimir.");
+        return;
+    }
+
+    let fechaActual = new Date().toLocaleDateString();
+
+    // Agregar fecha en la parte superior
+    doc.setFontSize(14);
+    doc.text(`Pedidos - Cuadro de Doble Entrada`, 14, 15);
+    doc.text(`Fecha: ${fechaActual}`, 240, 15); // Posición ajustada para la fecha
+
+    let clientesUnicos = [...new Set(pedidosNoImpresos.map(p => p.nombre))];
+    let productosUnicos = [...new Set(pedidosNoImpresos.map(p => p.producto))];
+
+    let tableHead = [["Producto", ...clientesUnicos]];
+    let tableBody = productosUnicos.map(prod => {
+        let row = [prod];
+        clientesUnicos.forEach(cliente => {
+            let total = pedidosNoImpresos
+                .filter(p => p.nombre === cliente && p.producto === prod)
+                .reduce((sum, p) => sum + p.cantidad, 0);
+            row.push(total > 0 ? total : "");
+        });
+        return row;
+    });
+
+    doc.autoTable({ head: tableHead, body: tableBody, startY: 25 });
+
+    let startY = doc.autoTable.previous.finalY + 10;
+    doc.text("Observaciones por Cliente y Producto", 14, startY);
+    startY += 6;
+
+    let observacionesAgrupadas = {};
+    pedidosNoImpresos.forEach(p => {
+        if (p.observacion.trim()) {
+            if (!observacionesAgrupadas[p.nombre]) {
+                observacionesAgrupadas[p.nombre] = [];
             }
-
-            let resumen = `<p><strong>Cliente:</strong> ${nombre}</p>`;
-            resumen += `<table border="1" style="width: 100%; text-align: center;">
-                            <tr>
-                                <th>Producto</th>
-                                <th>Cantidad</th>
-                                <th>Observaciones</th>
-                            </tr>`;
-
-            productos.forEach((producto, index) => {
-                let cantidades = document.querySelectorAll(".cantidad");
-                let observaciones = document.querySelectorAll(".observacion");
-                resumen += `<tr>
-                                <td>${producto.value}</td>
-                                <td>${cantidades[index].value}</td>
-                                <td>${observaciones[index].value || "Sin observaciones"}</td>
-                            </tr>`;
-            });
-
-            resumen += `</table>`;
-
-            document.getElementById("resumenPedido").innerHTML = resumen;
-            document.getElementById("modalConfirmacion").style.display = "flex";
+            observacionesAgrupadas[p.nombre].push(`${p.producto}: ${p.observacion}`);
         }
+    });
 
-        function obtenerFechaFormateada() {
-            const ahora = new Date();
-            const dia = String(ahora.getDate()).padStart(2, '0');
-            const mes = String(ahora.getMonth() + 1).padStart(2, '0');
-            const anio = ahora.getFullYear();
-            const horas = String(ahora.getHours()).padStart(2, '0');
-            const minutos = String(ahora.getMinutes()).padStart(2, '0');
-            return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
-        }
-
-        // ⭐⭐⭐ FUNCIÓN MEJORADA: ENVÍA UN SOLO OBJETO CON ARRAYS DE DATOS ⭐⭐⭐
-        function enviarPedido() {
-            let nombre = document.getElementById("nombre").value;
-            let productos = document.querySelectorAll(".producto");
-            let cantidades = document.querySelectorAll(".cantidad");
-            let observaciones = document.querySelectorAll(".observacion");
-
-            if (!nombre || productos.length === 0) {
-                alert("Debe ingresar un nombre y al menos un producto.");
-                return;
-            }
-
-            let pedidosLocalStorage = JSON.parse(localStorage.getItem("pedidos")) || [];
-            let fecha = obtenerFechaFormateada();
-
-            // Objeto que contendrá los arrays de producto, cantidad y observación para el GAS
-            let dataToSendToGAS = {
-                cliente: nombre,
-                fecha: fecha, // Fecha general del pedido
-                producto: [],
-                cantidad: [],
-                observacion: [],
-                impreso: 'No' // Campo impreso general
-            };
-
-            productos.forEach((producto, index) => {
-                let productoVal = producto.value;
-                let cantidadVal = parseInt(cantidades[index].value);
-                let observacionVal = observaciones[index].value;
-
-                // Guarda en localStorage cada ítem individualmente
-                pedidosLocalStorage.push({
-                    fecha,
-                    nombre,
-                    producto: productoVal,
-                    cantidad: cantidadVal,
-                    observacion: observacionVal,
-                    impreso: "No"
-                });
-
-                // Agrega los valores a los arrays dentro del objeto dataToSendToGAS
-                dataToSendToGAS.producto.push(productoVal);
-                dataToSendToGAS.cantidad.push(cantidadVal);
-                dataToSendToGAS.observacion.push(observacionVal);
-            });
-
-            // Llama a la función de envío UNA SOLA VEZ, pasando el objeto consolidado.
-            enviarPedidoAGoogleSheets(dataToSendToGAS); 
-
-            // Guarda el estado actualizado en localStorage
-            localStorage.setItem("pedidos", JSON.stringify(pedidosLocalStorage));
-
-            // Generación de PDF (usa los datos del objeto consolidado para consistencia)
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(14);
-            doc.text(`Pedido de: ${nombre}`, 10, 10);
-            doc.text(`Fecha: ${fecha}`, 10, 20);
-
-            let rowsForPdf = dataToSendToGAS.producto.map((prod, idx) => [
-                prod,
-                dataToSendToGAS.cantidad[idx],
-                dataToSendToGAS.observacion[idx] || "Sin observaciones"
-            ]);
-
-            doc.autoTable({
-                startY: 30,
-                head: [['Producto', 'Cantidad', 'Observaciones']],
-                body: rowsForPdf,
-            });
-
-            doc.save(`Pedido_${nombre}_${fecha.replace(/[/: ]/g, '_')}.pdf`);
-
-            // Limpieza visual y actualización del estado
-            alert("Pedido enviado correctamente");
-            document.getElementById("pedidoForm").reset();
-            document.getElementById("productosContainer").innerHTML = "";
-            actualizarEstado();
-            cerrarModal();
-        }
-
-        // ⭐⭐⭐ FUNCIÓN MEJORADA: ACEPTA UN OBJETO CON ARRAYS DE DATOS ⭐⭐⭐
-        // Asegúrate de que la URL sea la de tu Apps Script implementado con "Cualquiera"
-        function enviarPedidoAGoogleSheets(dataObject) { // Ahora acepta un objeto con los arrays
-            fetch("https://script.google.com/macros/s/AKfycbzEOzjUzvrKH994MYlF_Rp_uSflvco6wvLDV9IN5hbi8u6ncBjEDv2QDhKU1jyRvNs/exec", {
-                method: 'POST',
-                mode: 'no-cors', // Mantiene no-cors si el script de Google Apps es público y no necesita encabezados CORS
-                body: JSON.stringify(dataObject), // ¡Envía el objeto completo como JSON!
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.text())
-            .then(data => {
-                console.log('Pedido guardado en Google Sheets:', data);
-            })
-            .catch(error => {
-                console.error('Error al guardar pedido:', error);
-            });
-        }
-
-        function cerrarModal() {
-            document.getElementById("modalConfirmacion").style.display = "none";
-        }
-
-        // ⭐⭐⭐ FUNCIÓN MEJORADA: ANULAR PEDIDO CONSOLIDADO EN UN SOLO OBJETO ⭐⭐⭐
-        function anularPedido() {
-            let nombre = document.getElementById("nombre").value;
-            let productos = document.querySelectorAll(".producto");
-            let cantidades = document.querySelectorAll(".cantidad");
-            let observaciones = document.querySelectorAll(".observacion");
-
-            if (!nombre || productos.length === 0) {
-                alert("Debe ingresar un nombre y al menos un producto.");
-                return;
-            }
-
-            // Objeto que contendrá los arrays de producto, cantidad y observación para el GAS
-            let anulacionesToSendToGAS = {
-                cliente: nombre,
-                fecha: obtenerFechaFormateada(),
-                producto: [],
-                cantidad: [],
-                observacion: [],
-                impreso: 'No'
-            };
-
-            let pedidosLocalStorage = JSON.parse(localStorage.getItem("pedidos")) || [];
-            let fecha = obtenerFechaFormateada();
-
-            productos.forEach((producto, index) => {
-                let cantidadNegativa = -parseInt(cantidades[index].value);
-                let observacionVal = observaciones[index].value;
-                let productoVal = producto.value;
-
-                let pedidoAnulado = {
-                    fecha,
-                    nombre,
-                    producto: productoVal,
-                    cantidad: cantidadNegativa,
-                    observacion: observacionVal,
-                    impreso: "No"
-                };
-
-                // Agrega al array de localStorage
-                pedidosLocalStorage.push(pedidoAnulado);
-
-                // Agrega al objeto que se enviará a Google Apps Script
-                anulacionesToSendToGAS.producto.push(productoVal);
-                anulacionesToSendToGAS.cantidad.push(cantidadNegativa);
-                anulacionesToSendToGAS.observacion.push(observacionVal);
-            });
-
-            // Envía el objeto consolidado de anulaciones
-            enviarPedidoAGoogleSheets(anulacionesToSendToGAS); 
-
-            localStorage.setItem("pedidos", JSON.stringify(pedidosLocalStorage));
-
-            alert("Pedido anulado correctamente.");
-
-            document.getElementById("pedidoForm").reset();
-            document.getElementById("productosContainer").innerHTML = "";
-            actualizarEstado();
-            cerrarModal();
-        }
-
-        function descargarPDFPedido() {
-            let nombre = document.getElementById("nombre").value;
-            let productos = document.querySelectorAll(".producto");
-            let cantidades = document.querySelectorAll(".cantidad");
-            let observaciones = document.querySelectorAll(".observacion");
-
-            if (!nombre || productos.length === 0) {
-                alert("Debe completar un pedido antes de generar el PDF.");
-                return;
-            }
-
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            let fecha = obtenerFechaFormateada();
-
-            doc.setFontSize(14);
-            doc.text(`Pedido de: ${nombre}`, 10, 10);
-            doc.text(`Fecha: ${fecha}`, 10, 20);
-
-            let rows = [];
-
-            productos.forEach((producto, index) => {
-                rows.push([
-                    producto.value,
-                    cantidades[index].value,
-                    observaciones[index].value || "Sin observaciones"
-                ]);
-            });
-
-            doc.autoTable({
-                startY: 30,
-                head: [['Producto', 'Cantidad', 'Observaciones']],
-                body: rows,
-            });
-
-            doc.save(`Pedido_${nombre}_${fecha.replace(/[/: ]/g, '_')}.pdf`);
-        }
-        
-        function accederAdmin() {
-            let clave = prompt("Ingrese la clave de administrador:");
-            if (clave === "admin123") {
-                document.getElementById("adminPanel").style.display = "block";
-                mostrarPedidos();
-                actualizarEstado();  // Muestra el estado de los pedidos
-            } else {
-                alert("Clave incorrecta.");
-            }
-        }
-        
-        function solicitarClaveParaImpresion() {
-            const claveCorrecta = "admin123"; // Clave establecida
-            const claveIngresada = prompt("Ingrese la clave para imprimir:");
-
-            if (claveIngresada === claveCorrecta) {
-                generarPDF(); // Llamamos a la función de impresión
-            } else {
-                alert("Clave incorrecta. No se puede imprimir.");
-            }
-        }
-
-        function eliminarTodosLosPedidos() {
-            if (confirm("¿Estás seguro de que quieres eliminar todos los pedidos? Esta acción no se puede deshacer.")) {
-                localStorage.removeItem("pedidos"); // Elimina todos los pedidos guardados
-                mostrarPedidos(); // Actualiza la tabla para reflejar el cambio
-                alert("Todos los pedidos han sido eliminados.");
-            }
-        }
-
-        function mostrarPedidos() {
-            let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-
-            // ✅ Quedarse solo con los últimos 60 pedidos
-            if (pedidos.length > 60) {
-                pedidos = pedidos.slice(-60); // conservar solo los últimos 60
-                localStorage.setItem("pedidos", JSON.stringify(pedidos)); // actualizar localStorage
-            }
-
-            let tbody = document.querySelector("#tablaPedidos tbody");
-            tbody.innerHTML = "";
-            pedidos.forEach((p, index) => {
-                let fila = `<tr>
-                    <td>${p.fecha}</td>
-                    <td>${p.nombre}</td>
-                    <td>${p.producto}</td>
-                    <td>${p.cantidad}</td>
-                    <td>${p.observacion}</td>
-                    <td>${p.impreso}</td>
-                    <td><button onclick="eliminarPedido(${index})">❌</button></td>
-                </tr>`;
-                tbody.innerHTML += fila;
-            });
-        }
-        
-        function eliminarPedido(index) {
-            let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-            pedidos.splice(index, 1); // Elimina el pedido de la lista
-            localStorage.setItem("pedidos", JSON.stringify(pedidos));
-            mostrarPedidos(); // Actualiza la tabla
-        }
-
-        window.onload = function() {
-            actualizarEstado(); // Llamar a la función para actualizar el estado al cargar la página
-        };
-
-        function generarPDF() {
-            const { jsPDF } = window.jspdf;
-            let doc = new jsPDF({ orientation: "landscape" });
-            let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-            
-            let pedidosNoImpresos = pedidos.filter(p => p.impreso === "No");
-
-            if (pedidosNoImpresos.length === 0) {
-                alert("No hay pedidos nuevos para imprimir.");
-                return;
-            }
-
-            let fechaActual = new Date().toLocaleDateString();
-
-            // Agregar fecha en la parte superior
-            doc.setFontSize(14);
-            doc.text(`Pedidos - Cuadro de Doble Entrada`, 14, 15);
-            doc.text(`Fecha: ${fechaActual}`, 240, 15); // Posición ajustada para la fecha
-
-            let clientesUnicos = [...new Set(pedidosNoImpresos.map(p => p.nombre))];
-            let productosUnicos = [...new Set(pedidosNoImpresos.map(p => p.producto))];
-
-            let tableHead = [["Producto", ...clientesUnicos]];
-            let tableBody = productosUnicos.map(prod => {
-                let row = [prod];
-                clientesUnicos.forEach(cliente => {
-                    let total = pedidosNoImpresos
-                        .filter(p => p.nombre === cliente && p.producto === prod)
-                        .reduce((sum, p) => sum + p.cantidad, 0);
-                    row.push(total > 0 ? total : "");
-                });
-                return row;
-            });
-
-            doc.autoTable({ head: tableHead, body: tableBody, startY: 25 });
-
-            let startY = doc.autoTable.previous.finalY + 10;
-            doc.text("Observaciones por Cliente y Producto", 14, startY);
+    if (Object.keys(observacionesAgrupadas).length > 0) {
+        Object.entries(observacionesAgrupadas).forEach(([cliente, observaciones]) => {
+            doc.setFontSize(12);
+            doc.text(`${cliente}: ${observaciones.join("; ")}`, 14, startY);
             startY += 6;
+        });
+    } else {
+        doc.text("No hay observaciones.", 14, startY);
+    }
 
-            let observacionesAgrupadas = {};
-            pedidosNoImpresos.forEach(p => {
-                if (p.observacion.trim()) {
-                    if (!observacionesAgrupadas[p.nombre]) {
-                        observacionesAgrupadas[p.nombre] = [];
-                    }
-                    observacionesAgrupadas[p.nombre].push(`${p.producto}: ${p.observacion}`);
-                }
-            });
-
-            if (Object.keys(observacionesAgrupadas).length > 0) {
-                Object.entries(observacionesAgrupadas).forEach(([cliente, observaciones]) => {
-                    doc.setFontSize(12);
-                    doc.text(`${cliente}: ${observaciones.join("; ")}`, 14, startY);
-                    startY += 6;
-                });
-            } else {
-                doc.text("No hay observaciones.", 14, startY);
-            }
-
-            pedidos.forEach(p => {
-                if (pedidosNoImpresos.some(noImp => noImp === p)) {
-                    p.impreso = "Sí";
-                }
-            });
-
-            localStorage.setItem("pedidos", JSON.stringify(pedidos));
-
-            actualizarEstado();
-
-            doc.save(`Pedidos_${fechaActual}.pdf`);
+    pedidos.forEach(p => {
+        if (pedidosNoImpresos.some(noImp => noImp === p)) {
+            p.impreso = "Sí";
         }
+    });
 
-        // Función para actualizar el estado visual del círculo de impresión
-        function actualizarEstado() {
-            const pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-            const hayPendientes = pedidos.some(p => p.impreso === "No");
+    localStorage.setItem("pedidos", JSON.stringify(pedidos));
 
-            const estado = document.getElementById("estadoImpresion");
-            const cartel = document.getElementById("nuevoPedido");
+    actualizarEstado();
 
-            if (hayPendientes) {
-                estado.style.backgroundColor = "green";
-                cartel.style.display = "block";
-            } else {
-                estado.style.backgroundColor = "blue";
-                cartel.style.display = "none";
+    doc.save(`Pedidos_${fechaActual}.pdf`);
+}
+
+// Función para actualizar el estado visual del círculo de impresión
+function actualizarEstado() {
+  const pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+  const hayPendientes = pedidos.some(p => p.impreso === "No");
+
+  const estado = document.getElementById("estadoImpresion");
+  const cartel = document.getElementById("nuevoPedido");
+
+  if (hayPendientes) {
+    estado.style.backgroundColor = "green";
+    cartel.style.display = "block";
+  } else {
+    estado.style.backgroundColor = "blue";
+    cartel.style.display = "none";
+  }
+}    
+    function generarPDFCompleto() {
+    const { jsPDF } = window.jspdf;
+    let doc = new jsPDF({ orientation: "landscape" });
+    let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+
+    if (pedidos.length === 0) {
+        alert("No hay pedidos para imprimir.");
+        return;
+    }
+
+    let clientesUnicos = [...new Set(pedidos.map(p => p.nombre))];
+    let productosUnicos = [...new Set(pedidos.map(p => p.producto))];
+
+    // Crear tabla de doble entrada
+    let tableHead = [["Producto", ...clientesUnicos]];
+    let tableBody = productosUnicos.map(prod => {
+        let row = [prod];
+        clientesUnicos.forEach(cliente => {
+            let total = pedidos
+                .filter(p => p.nombre === cliente && p.producto === prod)
+                .reduce((sum, p) => sum + p.cantidad, 0);
+            row.push(total > 0 ? total : "");
+        });
+        return row;
+    });
+
+    doc.setFontSize(14);
+    doc.text("Pedidos - Cuadro de Doble Entrada (Completo)", 14, 15);
+    doc.autoTable({ head: tableHead, body: tableBody, startY: 20 });
+
+    // Agregar cuadro de observaciones
+    let startY = doc.autoTable.previous.finalY + 10;
+    doc.setFontSize(14);
+    doc.text("Observaciones por Cliente y Producto", 14, startY);
+    startY += 6;
+
+    let observacionesAgrupadas = {};
+    pedidos.forEach(p => {
+        if (p.observacion.trim()) {
+            if (!observacionesAgrupadas[p.nombre]) {
+                observacionesAgrupadas[p.nombre] = [];
             }
-        }      
-        function generarPDFCompleto() {
-            const { jsPDF } = window.jspdf;
-            let doc = new jsPDF({ orientation: "landscape" });
-            let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+            observacionesAgrupadas[p.nombre].push(`${p.producto}: ${p.observacion}`);
+        }
+    });
 
-            if (pedidos.length === 0) {
-                alert("No hay pedidos para imprimir.");
-                return;
-            }
-
-            let clientesUnicos = [...new Set(pedidos.map(p => p.nombre))];
-            let productosUnicos = [...new Set(pedidos.map(p => p.producto))];
-
-            // Crear tabla de doble entrada
-            let tableHead = [["Producto", ...clientesUnicos]];
-            let tableBody = productosUnicos.map(prod => {
-                let row = [prod];
-                clientesUnicos.forEach(cliente => {
-                    let total = pedidos
-                        .filter(p => p.nombre === cliente && p.producto === prod)
-                        .reduce((sum, p) => sum + p.cantidad, 0);
-                    row.push(total > 0 ? total : "");
-                });
-                return row;
-            });
-
-            doc.setFontSize(14);
-            doc.text("Pedidos - Cuadro de Doble Entrada (Completo)", 14, 15);
-            doc.autoTable({ head: tableHead, body: tableBody, startY: 20 });
-
-            // Agregar cuadro de observaciones
-            let startY = doc.autoTable.previous.finalY + 10;
-            doc.setFontSize(14);
-            doc.text("Observaciones por Cliente y Producto", 14, startY);
+    if (Object.keys(observacionesAgrupadas).length > 0) {
+        Object.entries(observacionesAgrupadas).forEach(([cliente, observaciones]) => {
+            doc.setFontSize(12);
+            doc.text(`${cliente}: ${observaciones.join("; ")}`, 14, startY);
             startY += 6;
+        });
+    } else {
+        doc.setFontSize(12);
+        doc.text("No hay observaciones.", 14, startY);
+    }
 
-            let observacionesAgrupadas = {};
-            pedidos.forEach(p => {
-                if (p.observacion.trim()) {
-                    if (!observacionesAgrupadas[p.nombre]) {
-                        observacionesAgrupadas[p.nombre] = [];
-                    }
-                    observacionesAgrupadas[p.nombre].push(`${p.producto}: ${p.observacion}`);
-                }
-            });
+    doc.save("Pedidos_Completos.pdf");
+}
 
-            if (Object.keys(observacionesAgrupadas).length > 0) {
-                Object.entries(observacionesAgrupadas).forEach(([cliente, observaciones]) => {
-                    doc.setFontSize(12);
-                    doc.text(`${cliente}: ${observaciones.join("; ")}`, 14, startY);
-                    startY += 6;
-                });
-            } else {
-                doc.setFontSize(12);
-                doc.text("No hay observaciones.", 14, startY);
-            }
+    function descargarExcel() {
+      let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+      let ws = XLSX.utils.json_to_sheet(pedidos);
+      let wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Pedidos");
+      XLSX.writeFile(wb, "Pedidos.xlsx");
+    }
 
-            doc.save("Pedidos_Completos.pdf");
-        }
-
-        function descargarExcel() {
-            let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
-            let ws = XLSX.utils.json_to_sheet(pedidos);
-            let wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Pedidos");
-            XLSX.writeFile(wb, "Pedidos.xlsx");
-        }
-
-    </script>
+  </script>
 <div id="modalConfirmacion" class="modal">
     <div class="modal-content">
         <h3>Resumen del Pedido</h3>
