@@ -273,6 +273,8 @@
 
     // --- FUNCION PRINCIPAL DE ENVIO DE PEDIDOS ---
     async function enviarPedido() {
+        const boton = document.getElementById("btnEnviar");
+        boton.disabled = true; // 🔒 Desactiva el botón para prevenir reenvíos
         let nombre = document.getElementById("nombre").value;
         let productos = document.querySelectorAll(".producto");
         let cantidades = document.querySelectorAll(".cantidad");
@@ -689,7 +691,7 @@
     <div class="modal-content">
         <h3>Resumen del Pedido</h3>
         <div id="resumenPedido"></div>
-        <button onclick="enviarPedido()">Enviar Pedido</button>
+        <button id="btnEnviar" onclick="enviarPedido()">Enviar Pedido</button>
         <button onclick="cerrarModal()">Cancelar</button>
     </div>
 </div>
